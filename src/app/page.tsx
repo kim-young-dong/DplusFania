@@ -6,10 +6,12 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1 className="text-5xl font-bold">Welcome to Dplus Fania</h1>
       <PlayerCard
-        player={{
-          name: "showmaker",
-          position: "Forward",
-          image: "/images/messi.jpg",
+        card={{
+          rank: 0,
+          player: {
+            name: "Showmaker",
+            position: "MID",
+          },
         }}
       />
     </main>

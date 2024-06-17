@@ -10,6 +10,11 @@ interface Card {
     position: string;
   };
 }
+const round = (value: number, precision = 3) =>
+  parseFloat(value.toFixed(precision));
+const clamp = (value: number, min = 0, max = 100) => {
+  return Math.min(Math.max(value, min), max);
+};
 
 const PlayerCard = ({ card }: { card: Card }) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -35,24 +40,19 @@ const PlayerCard = ({ card }: { card: Card }) => {
     }
   }, [cardRef, coordinate, rotationDegree.x, rotationDegree.y]);
 
-  // const rotateXY = useMemo(() => {
-  //   if (coordinate.x === 0 && coordinate.y === 0) return { x: 0, y: 0 };
-  //   const rotationDegree = {
-  //     x: (coordinate.y / 490) * 80 - 40,
-  //     y: (coordinate.x / 340) * 80 - 40,
-  //   };
-  //   return {
-  //     x: rotationDegree.x,
-  //     y: rotationDegree.y,
-  //   };
-  // }, [coordinate]);
   // 광택 효과
-  // const overlayStyle = useMemo(() => {
-  //   return {
-  //     backgroundPosition: `${coordinate.x / 5}% ${coordinate.y / 5}%`,
-  //     filter: `opacity(${coordinate.x / 200}) brightness(1.2)`,
-  //   };
-  // }, [coordinate]);
+  const overlayStyle = useMemo(() => {
+    // const rect = cardRef.current.getBoundingClientRect();
+    const percent = {
+      x: clamp(round((100 / 340) * coordinate.x)),
+      y: clamp(round((100 / 490) * coordinate.y)),
+    };
+
+    return {
+      x: `${percent.x}%`,
+      y: `${percent.y}%`,
+    };
+  }, [coordinate, cardRef.current]);
 
   // 마우스 이동 이벤트
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -73,13 +73,20 @@ const PlayerCard = ({ card }: { card: Card }) => {
         onMouseOut={() => setCoordinate({ x: 0, y: 0 })}
         ref={cardRef}
       >
-        {/* <div
-          className={style.overlay}
+        <div
+          className={style.card__glare}
           style={{
-            backgroundPosition: overlayStyle.backgroundPosition,
-            filter: overlayStyle.filter,
+            backgroundImage: `
+            radial-gradient(
+            farthest-corner circle at ${overlayStyle.x} ${overlayStyle.y},
+              hsla(0, 0%, 100%, 0.8) 10%,
+              hsla(0, 0%, 100%, 0.65) 20%,
+              hsla(0, 0%, 0%, 0) 90%
+            )            
+            `,
+            opacity: coordinate.x === 0 && coordinate.y === 0 ? 0 : 1,
           }}
-        ></div> */}
+        ></div>
         <div className="card_front">
           <Image
             src={`/images/cards/${card.rank}/${card.player.name}.png`}
