@@ -25,6 +25,8 @@
   transform: translateZ(1.41px);
   overflow: hidden;
   mix-blend-mode: overlay;
+  z-index: 1;
+  /* filter: brightness(0.7) contrast(1.5); */
 }
 /* .overlay {
   position: absolute;

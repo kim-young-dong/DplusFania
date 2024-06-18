@@ -7,9 +7,9 @@ export default function Home() {
       <h1 className="text-5xl font-bold">Welcome to Dplus Fania</h1>
       <PlayerCard
         card={{
-          rank: 0,
+          rank: 1,
           player: {
-            name: "Showmaker",
+            name: "Lucid",
             position: "MID",
           },
         }}
