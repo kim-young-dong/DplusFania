@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import style from "./style/PlayerCard.module.css";
+// import style from "./style/PlayerCard.module.css";
+import styled from "styled-components";
 
 interface Card {
   rank: number;
@@ -9,6 +10,7 @@ interface Card {
     name: string;
     position: string;
   };
+  img: string;
 }
 // 소수점 자리수 반올림
 const round = (value: number, precision = 3) =>
@@ -22,26 +24,14 @@ const PlayerCard = ({ card }: { card: Card }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [coordinate, setCoordinate] = useState({ x: 0, y: 0 });
   // 카드 회전 각도
-  const rotationDegree = useMemo(() => {
-    if (coordinate.x === 0 && coordinate.y === 0) return { x: 0, y: 0 };
+  const cardTransform = useMemo(() => {
+    if (coordinate.x === 0 && coordinate.y === 0) return { sec: 1, x: 0, y: 0 };
     return {
+      sec: 0,
       x: (coordinate.y / 490) * 80 - 40,
       y: (coordinate.x / 340) * 80 - 40,
     };
   }, [coordinate]);
-
-  // 카드 회전
-  useEffect(() => {
-    if (cardRef.current === null) return;
-    cardRef.current.style.transition = `transform 0s`;
-    // 초기 위치로 돌아갈 때 transition 효과
-    if (coordinate.x === 0 && coordinate.y === 0) {
-      cardRef.current.style.transition = `transform 1s`;
-      cardRef.current.style.transform = `rotateX(0deg) rotateY(0deg)`;
-    } else {
-      cardRef.current.style.transform = `rotateX(${rotationDegree.x}deg) rotateY(${rotationDegree.y}deg)`;
-    }
-  }, [cardRef, coordinate, rotationDegree.x, rotationDegree.y]);
 
   // 광택 효과
   const overlayStyle = useMemo(() => {
@@ -69,21 +59,24 @@ const PlayerCard = ({ card }: { card: Card }) => {
         perspective: "500px",
       }}
     >
-      <div
+      <Card
+        sec={cardTransform.sec}
+        rotateX={cardTransform.x}
+        rotateY={cardTransform.y}
         className="player_card"
         onMouseMove={handleMouseMove}
         onMouseOut={() => setCoordinate({ x: 0, y: 0 })}
         ref={cardRef}
       >
         <div
-          className={style.card__glare}
+          className="card__glare"
           style={{
             backgroundImage: `
             radial-gradient(
             farthest-corner circle at ${overlayStyle.x} ${overlayStyle.y},
-              hsla(0, 0%, 100%, 0.6) 10%,
-              hsla(0, 0%, 100%, 0.45) 25%,
-              hsla(0, 0%, 0%, 0) 50%
+              hsla(0, 0%, 100%, 0.8) 10%,
+              hsla(0, 0%, 100%, 0.65) 20%,
+              hsla(0, 0%, 0%, 0) 90%
             )            
             `,
             opacity: coordinate.x === 0 && coordinate.y === 0 ? 0 : 0.8,
@@ -91,47 +84,40 @@ const PlayerCard = ({ card }: { card: Card }) => {
         ></div>
         <div className="card_front">
           <Image
-            src={`/images/cards/${card.rank}/${card.player.name}.png`}
+            src={card.img}
             alt={card.player.name}
             width={340}
             height={490}
           />
         </div>
-      </div>
-      {/* 또 다른 버전. */}
-      <div className="card_front w-full h-full absolute">
-        <Image
-          src={`/images/testbg.png`}
-          alt={card.player.name}
-          width={340}
-          height={490}
-          className="w-full h-full absolute"
-        />
-        <Image
-          src={`/images/players/player-lucid.png`}
-          alt={card.player.name}
-          width={340}
-          height={490}
-          className="w-full h-full absolute z-10"
-        />
-        <div
-          className={style.card__glare}
-          style={{
-            backgroundImage: `
-            radial-gradient(
-            farthest-corner circle at ${overlayStyle.x} ${overlayStyle.y},
-              hsla(0, 0%, 100%, 0.8) 10%,
-              hsla(0, 0%, 100%, 0.65) 20%,
-              hsla(0, 0%, 0%, 0) 50%
-
-            )            
-            `,
-            opacity: coordinate.x === 0 && coordinate.y === 0 ? 0 : 1,
-          }}
-        ></div>
-      </div>
+        {/* <div className="card_back">
+          <Image
+            src={"/images/cards/card_back.png"}
+            alt={"card_back"}
+            width={340}
+            height={490}
+          />
+        </div> */}
+      </Card>
     </div>
   );
 };
 
 export default PlayerCard;
+
+const Card = styled.div<{ sec: number; rotateX: number; rotateY: number }>`
+  position: relative;
+  transition: transform ${(props) => props.sec}s;
+  transform: ${(props) =>
+    `rotateX(${props.rotateX}deg) rotateY(${props.rotateY}deg)`};
+
+  .card__glare {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform: translateZ(1.41px);
+    overflow: hidden;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+`;
