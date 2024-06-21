@@ -87,8 +87,10 @@ const PlayerCard = ({ card }: { card: Card }) => {
     }, 1000);
   };
   return (
-    <CardTransLater>
-      <Card
+    <Card>
+      <CardRotater
+        ref={cardRef}
+        className="card_rotater"
         style={{
           transform: `rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
           transition: `transform ${transform.sec}s`,
@@ -106,8 +108,8 @@ const PlayerCard = ({ card }: { card: Card }) => {
           }
         }}
         onClick={activate}
-        ref={cardRef}
       >
+        <div className="shadow"></div>
         <div
           className="card__glare"
           style={{
@@ -122,6 +124,7 @@ const PlayerCard = ({ card }: { card: Card }) => {
             opacity: pointer.x === 0 && pointer.y === 0 ? 0 : 0.8,
           }}
         ></div>
+
         <div className="card_back">
           <Image
             src={"/images/cards/card_back.png"}
@@ -138,32 +141,43 @@ const PlayerCard = ({ card }: { card: Card }) => {
             height={490}
           />
         </div>
-      </Card>
-    </CardTransLater>
+      </CardRotater>
+    </Card>
   );
 };
 
 export default PlayerCard;
-const CardTransLater = styled.div`
+const Card = styled.div`
   perspective: 600px;
   position: relative;
   width: auto;
-  border-radius: 60px;
+  /* border-radius: 15px;
+  overflow: hidden; */
 `;
-const Card = styled.div`
+const CardRotater = styled.div`
   display: grid;
-  will-change: transform, box-shadow;
-  box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
-    0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
-    0 0 20px 0px transparent;
-  border-radius: 15px;
-  overflow: hidden;
+  perspective: 600px;
+  will-change: transform;
+  transform-style: preserve-3d;
+  .shadow {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
+      0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
+      0 0 20px 0px transparent;
+  }
 
   * {
     width: auto;
     height: auto;
     display: grid;
     grid-area: 1/1;
+    transform-style: preserve-3d;
+  }
+  img {
+    height: auto;
+    -webkit-transform: translate3d(0px, 0px, 0.01px);
+    transform: translate3d(0px, 0px, 0.01px);
   }
 
   .card__glare {
@@ -174,5 +188,17 @@ const Card = styled.div`
     overflow: hidden;
     mix-blend-mode: overlay;
     z-index: 1;
+  }
+  .card_front,
+  .card_front * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .card_back {
+    /* -webkit-transform: rotateY(180deg) translateZ(1px);
+    transform: rotateY(180deg) translateZ(10px); */
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
   }
 `;
