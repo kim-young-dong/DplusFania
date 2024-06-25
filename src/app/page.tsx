@@ -12,7 +12,7 @@ export default function Home() {
             name: "Lucid",
             position: "MID",
           },
-          img: "/images/cards/test/card_galaxy.png",
+          img: "/images/cards/card_back.png",
         }}
       />
     </main>

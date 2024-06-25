@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import style from "./styles/PlayerCard.module.css";
+// import style from "./styles/PlayerCard.module.css";
 import styled from "styled-components";
 import { round, clamp, getRandomNumber } from "@/constant/math";
 
@@ -17,6 +17,7 @@ interface Card {
 const PlayerCard = ({ card }: { card: Card }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [img, setImg] = useState(card.img);
+  const [isPickup, setIsPickup] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [interacting, setInteracting] = useState(true);
@@ -32,9 +33,6 @@ const PlayerCard = ({ card }: { card: Card }) => {
       setIsLoaded(true);
     }
   }, []);
-  useEffect(() => {
-    console.log(pointer, "pointer");
-  }, [pointer]);
 
   // 카드가 active 상태일 때 360도 회전된 상태로 변경
   const rotateDelta = useMemo(() => {
@@ -84,6 +82,7 @@ const PlayerCard = ({ card }: { card: Card }) => {
   };
 
   const popover = () => {
+    setIsActive((pre) => !pre);
     setPointer({ x: 0, y: 0 });
     if (isActive === true) {
       setTransform({ sec: 1, rotateX: 0, rotateY: 0 });
@@ -91,19 +90,24 @@ const PlayerCard = ({ card }: { card: Card }) => {
       setTransform({ sec: 1, rotateX: 0, rotateY: 360 });
     }
     setInteracting(false);
+  };
+  const cardPickup = () => {
+    cardRef.current?.classList.toggle("pickup");
+    setIsPickup(true);
     setTimeout(() => {
       setImg("/images/cards/test/card_blibli.png");
-    }, 300);
+    }, 500);
     setTimeout(() => {
       setInteracting(true);
     }, 1000);
   };
   // 클릭 이벤트
   const activate = () => {
-    // active 상태 변경
-    setIsActive((pre) => !pre);
-    // pointer 초기화, 카드 회전
-    popover();
+    if (!isPickup) {
+      cardPickup();
+    } else {
+      popover();
+    }
   };
   // `
   //   --pointer-x: ${$springGlare.x}%;
@@ -134,35 +138,21 @@ const PlayerCard = ({ card }: { card: Card }) => {
     "--rotate-x": `${transform.rotateX}deg`,
     "--rotate-y": `${transform.rotateY}deg`,
     "--transition-sec": `${transform.sec}s`,
+    "--card-scale": isActive ? 1.2 : 1,
+    "--card-edge": "#FFDE33",
+    "--card-glow": "#FFDE33",
   } as React.CSSProperties;
   return (
-    <Card style={dynamicStyles}>
+    <Card className="card" style={dynamicStyles}>
       <CardRotater
         ref={cardRef}
-        className="card_rotater"
-        // style={{
-        //   transform: `rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
-        //   transition: `transform ${transform.sec}s`,
-        // }}
+        className="card__rotater"
         onMouseMove={interact}
         onMouseOut={interactEnd}
         onClick={activate}
       >
-        <div className={style.shadow}></div>
-        <Glare
-          className="card__glare"
-          // style={{
-          //   backgroundImage: `
-          //   radial-gradient(
-          //   farthest-corner circle at var(--pointer-x) var(--pointer-y),
-          //     hsla(0, 0%, 100%, 0.8) 10%,
-          //     hsla(0, 0%, 100%, 0.65) 20%,
-          //     hsla(0, 0%, 0%, 0) 90%
-          //   )
-          //   `,
-          //   opacity: pointer.x === 0 && pointer.y === 0 ? 0 : 0.8,
-          // }}
-        ></Glare>
+        <div className="shadow"></div>
+        <Glare className="card__glare"></Glare>
 
         <div
           className="card_back"
@@ -192,6 +182,25 @@ const Card = styled.div`
   position: relative;
   width: 340px;
   height: 490px;
+
+  .pickup {
+    animation: pickup 1.5s ease-in-out;
+  }
+
+  @keyframes pickup {
+    0% {
+      transform: rotateY(0deg);
+    }
+    66% {
+      transform: rotateY(720deg);
+    }
+    75% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 `;
 const CardRotater = styled.div`
   display: grid;
@@ -201,12 +210,19 @@ const CardRotater = styled.div`
   transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
   transition: all var(--transition-sec) ease;
 
-  /* .shadow {
+  .shadow {
     border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
       0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
       0 0 20px 0px transparent;
+  }
+  /* &.pickup:hover .shadow {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 3px -1px white, 0 0 3px 1px var(--card-edge),
+      0 0 12px 2px var(--card-glow), 0px 10px 20px -5px white,
+      0 0 40px -30px var(--card-glow), 0 0 50px -20px var(--card-glow);
   } */
 
   * {
