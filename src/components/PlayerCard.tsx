@@ -4,6 +4,7 @@ import Image from "next/image";
 // import style from "./styles/PlayerCard.module.css";
 import styled from "styled-components";
 import { round, clamp, getRandomNumber } from "@/constant/math";
+import { GET_RANDOM_CARD } from "@/constant/card";
 
 interface Card {
   rank: number;
@@ -33,6 +34,13 @@ const PlayerCard = ({ card }: { card: Card }) => {
       setIsLoaded(true);
     }
   }, []);
+  useEffect(() => {
+    const imgURL = GET_RANDOM_CARD();
+    if (!isPickup) return;
+    setTimeout(() => {
+      setImg(imgURL);
+    }, 300);
+  }, [isPickup]);
 
   // 카드가 active 상태일 때 360도 회전된 상태로 변경
   const rotateDelta = useMemo(() => {
@@ -90,13 +98,19 @@ const PlayerCard = ({ card }: { card: Card }) => {
       setTransform({ sec: 1, rotateX: 0, rotateY: 360 });
     }
     setInteracting(false);
+    setTimeout(() => {
+      setInteracting(true);
+    }, 1000);
   };
-  const cardPickup = () => {
+  // 카드 픽업
+  const cardPickup = (
+    imgURL: string = "/images/cards/test/card_blibli.png"
+  ) => {
     cardRef.current?.classList.toggle("pickup");
     setIsPickup(true);
-    setTimeout(() => {
-      setImg("/images/cards/test/card_blibli.png");
-    }, 500);
+    // setTimeout(() => {
+    //   setImg(imgURL);
+    // }, 300);
     setTimeout(() => {
       setInteracting(true);
     }, 1000);
@@ -104,7 +118,10 @@ const PlayerCard = ({ card }: { card: Card }) => {
   // 클릭 이벤트
   const activate = () => {
     if (!isPickup) {
-      cardPickup();
+      const imgURL = GET_RANDOM_CARD();
+      // const imgURL = "/images/cards/test/card_blibli.png";
+
+      cardPickup(imgURL);
     } else {
       popover();
     }
@@ -139,8 +156,8 @@ const PlayerCard = ({ card }: { card: Card }) => {
     "--rotate-y": `${transform.rotateY}deg`,
     "--transition-sec": `${transform.sec}s`,
     "--card-scale": isActive ? 1.2 : 1,
-    "--card-edge": "#FFDE33",
-    "--card-glow": "#FFDE33",
+    "--card-edge": "#FFEE93",
+    "--card-glow": "#FFEE93",
   } as React.CSSProperties;
   return (
     <Card className="card" style={dynamicStyles}>
@@ -217,13 +234,13 @@ const CardRotater = styled.div`
       0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
       0 0 20px 0px transparent;
   }
-  /* &.pickup:hover .shadow {
+  &:hover .shadow {
     border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 0 3px -1px white, 0 0 3px 1px var(--card-edge),
       0 0 12px 2px var(--card-glow), 0px 10px 20px -5px white,
       0 0 40px -30px var(--card-glow), 0 0 50px -20px var(--card-glow);
-  } */
+  }
 
   * {
     width: auto;
