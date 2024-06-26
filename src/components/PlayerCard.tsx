@@ -7,17 +7,15 @@ import { round, clamp, getRandomNumber } from "@/constant/math";
 import { GET_RANDOM_CARD } from "@/constant/card";
 
 interface Card {
-  rank: number;
   player: {
     name: string;
     position: string;
   };
-  img: string;
+  imgURL: string;
 }
 
 const PlayerCard = ({ card }: { card: Card }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [img, setImg] = useState(card.img);
   const [isPickup, setIsPickup] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -34,13 +32,6 @@ const PlayerCard = ({ card }: { card: Card }) => {
       setIsLoaded(true);
     }
   }, []);
-  useEffect(() => {
-    const imgURL = GET_RANDOM_CARD();
-    if (!isPickup) return;
-    setTimeout(() => {
-      setImg(imgURL);
-    }, 300);
-  }, [isPickup]);
 
   // 카드가 active 상태일 때 360도 회전된 상태로 변경
   const rotateDelta = useMemo(() => {
@@ -89,6 +80,7 @@ const PlayerCard = ({ card }: { card: Card }) => {
     }
   };
 
+  // 카드 팝업
   const popover = () => {
     setIsActive((pre) => !pre);
     setPointer({ x: 0, y: 0 });
@@ -103,14 +95,11 @@ const PlayerCard = ({ card }: { card: Card }) => {
     }, 1000);
   };
   // 카드 픽업
-  const cardPickup = (
-    imgURL: string = "/images/cards/test/card_blibli.png"
-  ) => {
+  const cardPickup = () => {
     cardRef.current?.classList.toggle("pickup");
-    setIsPickup(true);
-    // setTimeout(() => {
-    //   setImg(imgURL);
-    // }, 300);
+    setTimeout(() => {
+      setIsPickup(true);
+    }, 300);
     setTimeout(() => {
       setInteracting(true);
     }, 1000);
@@ -118,10 +107,7 @@ const PlayerCard = ({ card }: { card: Card }) => {
   // 클릭 이벤트
   const activate = () => {
     if (!isPickup) {
-      const imgURL = GET_RANDOM_CARD();
-      // const imgURL = "/images/cards/test/card_blibli.png";
-
-      cardPickup(imgURL);
+      cardPickup();
     } else {
       popover();
     }
@@ -173,9 +159,9 @@ const PlayerCard = ({ card }: { card: Card }) => {
 
         <div
           className="card_back"
-          style={{
-            display: isLoaded ? "block" : "none",
-          }}
+          // style={{
+          //   display: isLoaded ? "block" : "none",
+          // }}
         >
           <Image
             src={"/images/cards/card_back.png"}
@@ -185,7 +171,12 @@ const PlayerCard = ({ card }: { card: Card }) => {
           />
         </div>
         <div className="card_front">
-          <Image src={img} alt={card.player.name} width={340} height={475} />
+          <Image
+            src={isPickup ? card.imgURL : "/images/cards/card_back.png"}
+            alt={card.player.name}
+            width={340}
+            height={475}
+          />
         </div>
       </CardRotater>
     </Card>
