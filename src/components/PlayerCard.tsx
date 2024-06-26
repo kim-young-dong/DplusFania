@@ -159,9 +159,9 @@ const PlayerCard = ({ card }: { card: Card }) => {
 
         <div
           className="card_back"
-          // style={{
-          //   display: isLoaded ? "block" : "none",
-          // }}
+          style={{
+            display: isLoaded ? "block" : "none",
+          }}
         >
           <Image
             src={"/images/cards/card_back.png"}
