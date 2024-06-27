@@ -54,10 +54,26 @@ const PlayerCard = ({ card }: { card: Card }) => {
   }, [pointer, interacting]);
 
   // 마우스 인터렉션
-  const interact = (event: React.MouseEvent<HTMLDivElement>) => {
+  const interact = (
+    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
     if (interacting === false) return;
-    const offsetX = event.nativeEvent.offsetX;
-    const offsetY = event.nativeEvent.offsetY;
+    let offsetX, offsetY;
+    // 이벤트 타입에 따라 offsetX, offsetY 값을 설정
+    if (event.nativeEvent instanceof MouseEvent) {
+      offsetX = event.nativeEvent.offsetX;
+      offsetY = event.nativeEvent.offsetY;
+    } else if (
+      event.nativeEvent instanceof TouchEvent &&
+      event.nativeEvent.touches.length > 0
+    ) {
+      const touch = event.nativeEvent.touches[0];
+      const target = touch.target as HTMLDivElement;
+      offsetX = touch.clientX - target.offsetLeft;
+      offsetY = touch.clientY - target.offsetTop;
+    } else {
+      return; // 이벤트 처리를 위한 조건이 충족되지 않음
+    }
     setPointer({
       x: offsetX,
       y: offsetY,
@@ -151,7 +167,9 @@ const PlayerCard = ({ card }: { card: Card }) => {
         ref={cardRef}
         className="card__rotater"
         onMouseMove={interact}
+        onTouchMove={interact}
         onMouseOut={interactEnd}
+        onTouchEnd={interactEnd}
         onClick={activate}
       >
         <div className="shadow"></div>
