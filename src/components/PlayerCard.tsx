@@ -188,9 +188,14 @@ const PlayerCard = ({ card }: { card: Card }) => {
             height={475}
           />
         </div>
-        <div className="card_front">
+        <div
+          className="card_front"
+          style={{
+            visibility: isPickup ? "visible" : "hidden",
+          }}
+        >
           <Image
-            src={isPickup ? card.imgURL : "/images/cards/card_back.png"}
+            src={card.imgURL}
             alt={card.player.name}
             width={340}
             height={475}
