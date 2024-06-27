@@ -12,7 +12,7 @@ export default function Home() {
         <p className="text-xl">
           로그인하고 자신이 뽑은 포토카드를 컬렉션에 추가해보세요!
         </p>
-        <p>카카오로그인</p>
+        {/* <p>카카오로그인</p> */}
       </div>
       <p>Click to Card</p>
       <PlayerCard
