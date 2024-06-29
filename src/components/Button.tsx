@@ -17,11 +17,7 @@ const Button = ({
   style,
 }: ButtonProps) => {
   return (
-    <Wrapper
-      onClick={() => {
-        console.log("버튼 클릭");
-      }}
-    >
+    <Wrapper className={className} style={style} onClick={onClick}>
       {children}
     </Wrapper>
   );
