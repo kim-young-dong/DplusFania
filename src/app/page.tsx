@@ -1,17 +1,16 @@
 import Image from "next/image";
 import PlayerCard from "@/components/PlayerCard";
+import Button from "@/components/Button";
 import { GET_RANDOM_CARD } from "@/constant/card";
 
 export default function Home() {
   const cardInfo = GET_RANDOM_CARD();
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-5xl font-bold">Welcome to Dplus Fania</h1>
-      <div className=" flex flex-col justify-center items-center gap-2">
-        {/* <p className="text-xl">
-          로그인하고 자신이 뽑은 포토카드를 컬렉션에 추가해보세요!
-        </p> */}
-        {/* <p>카카오로그인</p> */}
+      <h1 className="text-3xl font-bold">Welcome to Dplus Fania</h1>
+      <div className=" flex flex-col justify-center items-center gap-8">
+        <p className="text-xl">자신이 뽑은 카드를 컬렉션에 추가해보세요!</p>
+        <Button>로그인</Button>
       </div>
       <div className="flex flex-col items-center gap-2">
         <p>Click to Card</p>
