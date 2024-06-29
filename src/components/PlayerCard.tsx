@@ -211,8 +211,8 @@ export default PlayerCard;
 const Card = styled.div`
   perspective: 600px;
   position: relative;
-  width: 340px;
-  height: 490px;
+  display: flex;
+  justify-content: center;
 
   .pickup {
     animation: pickup 1.5s ease-in-out;
@@ -234,6 +234,11 @@ const Card = styled.div`
   }
 `;
 const CardRotater = styled.div`
+  width: 90%;
+  max-width: 340px;
+  height: auto;
+  max-height: 475px;
+
   display: grid;
   perspective: 600px;
   /* will-change: transform visibility; */
