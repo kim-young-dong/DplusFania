@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 interface ButtonProps {
   children: React.ReactNode;
+  type?: "button" | "submit" | "reset";
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   active?: boolean;
   className?: string;
@@ -11,13 +12,14 @@ interface ButtonProps {
 
 const Button = ({
   children,
+  type,
   onClick,
   active = false,
   className,
   style,
 }: ButtonProps) => {
   return (
-    <Wrapper className={className} style={style} onClick={onClick}>
+    <Wrapper className={className} style={style} onClick={onClick} type={type}>
       {children}
     </Wrapper>
   );

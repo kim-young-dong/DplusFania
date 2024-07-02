@@ -5,7 +5,7 @@ interface InputProps {
   id: string;
   title: string;
   value: string | number;
-  onChange: () => void;
+  onChange: (e: any) => void;
   type: "text" | "password" | "email";
   errorMessage: string;
   className?: string;
@@ -26,7 +26,7 @@ const Input = ({
     <Wrapper>
       {!!title && <Label>{title}</Label>}
       <TextInput id={id} value={value} onChange={onChange} type={type} />
-      <ErrorMessage>{errorMessage}</ErrorMessage>
+      {/* <ErrorMessage>{errorMessage}</ErrorMessage> */}
     </Wrapper>
   );
 };
