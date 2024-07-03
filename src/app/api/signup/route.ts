@@ -6,24 +6,21 @@ type Data = {
   error?: string;
 };
 
-export const POST = async (req: NextRequest, res: NextResponse<Data>) => {
+export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
-  console.log("req-signup", email, password);
 
   try {
-    const { user, error } = await $supabase.auth.signUp({
+    const { error } = await $supabase.auth.signUp({
       email,
       password,
     });
-    console.log("res-signup", user, error);
 
     if (error) {
       throw error;
     }
 
-    return user;
+    return NextResponse.redirect("/sign-in");
   } catch (error) {
-    console.log(error);
-    return error;
+    return NextResponse.json({ error, success: false });
   }
-};
+}

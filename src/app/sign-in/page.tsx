@@ -23,7 +23,7 @@ export default function SignInPage() {
       },
       body: JSON.stringify({ email, password }),
     });
-    console.log(response);
+    const data = await response.json();
 
     // const data = await response.json();
 
