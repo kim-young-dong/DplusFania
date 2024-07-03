@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     "켈린",
     "kellin",
   ],
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
