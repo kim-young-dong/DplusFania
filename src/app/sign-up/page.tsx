@@ -88,7 +88,7 @@ export default function Signup() {
           errorMessage="text"
         />
         <Input
-          id="password"
+          id="passwordCheck"
           title="비밀번호 확인"
           onChange={(e) => setPasswordCheck(e.target.value)}
           value={passwordCheck}
