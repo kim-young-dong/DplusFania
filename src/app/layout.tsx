@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import StyledComponentsRegistry from "./lib/registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,9 +41,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex justify-center">
-          <div className=" w-full h-full max-w-[400px]">{children}</div>
-        </div>
+        <StyledComponentsRegistry>
+          <div className="flex justify-center">
+            <div className=" w-full h-full max-w-[400px]">{children}</div>
+          </div>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
