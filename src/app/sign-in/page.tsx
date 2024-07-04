@@ -24,14 +24,6 @@ export default function SignInPage() {
       body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
-
-    // const data = await response.json();
-
-    // if (response.ok) {
-    //   setMessage(data.message);
-    // } else {
-    //   setError(data.error);
-    // }
   };
   return (
     <>
