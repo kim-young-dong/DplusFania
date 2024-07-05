@@ -1,16 +1,20 @@
 // pages/signup.tsx
 "use client";
 import { useState, FormEvent } from "react";
+import Link from "next/link";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import styled from "styled-components";
 
-export default function Signup() {
+interface ChildComponentProps {
+  onIsCompleteChange: (newState: boolean) => void;
+}
+
+const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordCheck, setPasswordCheck] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
 
   const validatePassword = (): boolean => {
     const hasLetter = /[a-zA-Z]/.test(password); // 비밀번호에 문자가 있는지 확인
@@ -40,8 +44,6 @@ export default function Signup() {
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setMessage("");
 
     if (!validatePassword()) {
       return false;
@@ -53,62 +55,86 @@ export default function Signup() {
         },
         body: JSON.stringify({ email, password }),
       });
-      console.log(response);
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
+        onIsCompleteChange(true);
       } else {
-        setError(data.error);
+        setError(data.message);
       }
     }
   };
+  return (
+    <form onSubmit={handleSignup} className="w-full">
+      <Input
+        id="email"
+        title="이메일 주소"
+        onChange={(e) => {
+          setEmail(e.target.value);
+        }}
+        value={email}
+        type="email"
+        errorMessage="text"
+      />
+      <Input
+        id="password"
+        title="비밀번호"
+        onChange={(e) => setPassword(e.target.value)}
+        value={password}
+        type="password"
+        errorMessage="text"
+      />
+      <Input
+        id="passwordCheck"
+        title="비밀번호 확인"
+        onChange={(e) => setPasswordCheck(e.target.value)}
+        value={passwordCheck}
+        type="password"
+        errorMessage="text"
+      />
+      <div style={{ margin: "14px 0" }}>
+        <Button type="submit">회원가입</Button>
+      </div>
+      <div
+        style={{
+          color: "red",
+          fontSize: "14px",
+          textAlign: "center",
+        }}
+      >
+        {error}
+      </div>
+    </form>
+  );
+};
+const SignupConfirm = () => {
+  return (
+    <>
+      <div className="w-full flex flex-col items-center gap-12">
+        <h2 className="text-xl text-center">
+          {"가입 메일을 발송했습니다.\n메일을 확인해주세요."}
+        </h2>
+        <Link href={"/"} className="w-full">
+          <Button>확인</Button>
+        </Link>
+      </div>
+    </>
+  );
+};
+
+export default function Signup() {
+  const [signupComplete, setSignupComplete] = useState<boolean>(false);
 
   return (
-    <div>
+    <>
       <SignHeader>회원가입</SignHeader>
-      <form onSubmit={handleSignup} style={{ padding: "0 16px" }}>
-        <Input
-          id="email"
-          title="이메일 주소"
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-          value={email}
-          type="email"
-          errorMessage="text"
-        />
-        <Input
-          id="password"
-          title="비밀번호"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          type="password"
-          errorMessage="text"
-        />
-        <Input
-          id="passwordCheck"
-          title="비밀번호 확인"
-          onChange={(e) => setPasswordCheck(e.target.value)}
-          value={passwordCheck}
-          type="password"
-          errorMessage="text"
-        />
-        <div style={{ margin: "14px 0" }}>
-          <Button type="submit">회원가입</Button>
-        </div>
-        <div
-          style={{
-            color: "red",
-            fontSize: "14px",
-            textAlign: "center",
-          }}
-        >
-          {error}
-        </div>
-      </form>
-    </div>
+      {signupComplete ? (
+        <SignupConfirm />
+      ) : (
+        <SignupForm onIsCompleteChange={setSignupComplete} />
+      )}
+    </>
   );
 }
 const SignHeader = styled.div`

@@ -19,8 +19,15 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
-    return NextResponse.redirect("/sign-in");
+    return NextResponse.json({
+      success: true,
+      message: "회원가입에 성공했습니다.",
+    });
   } catch (error) {
-    return NextResponse.json({ error, success: false });
+    return NextResponse.json({
+      error,
+      success: false,
+      message: "회원가입에 실패했습니다.",
+    });
   }
 }
