@@ -43,7 +43,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <div className="flex justify-center">
-            <div className=" w-full h-full max-w-[400px]">{children}</div>
+            <div className=" w-full h-full max-w-[400px]">
+              <main className="min-h-screen lg:p-12 p-4 flex flex-col items-center gap-4">
+                {children}
+              </main>
+            </div>
           </div>
         </StyledComponentsRegistry>
       </body>

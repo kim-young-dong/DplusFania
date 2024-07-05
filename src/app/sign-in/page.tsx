@@ -28,7 +28,7 @@ export default function SignInPage() {
   return (
     <>
       <SignHeader>로그인</SignHeader>
-      <form onSubmit={handleSignin} style={{ padding: "0 16px" }}>
+      <form onSubmit={handleSignin} className="w-full">
         <Input
           id="email"
           title="이메일 주소"

@@ -6,7 +6,7 @@ import { GET_RANDOM_CARD } from "@/constant/card";
 export default function Home() {
   const cardInfo = GET_RANDOM_CARD();
   return (
-    <main className="min-h-screen p-12 flex  flex-col justify-center items-center gap-4">
+    <>
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold">Welcome to Dplus Fania</h1>
         <div className=" flex flex-col justify-center items-center gap-8">
@@ -28,6 +28,6 @@ export default function Home() {
           }}
         />
       </div>
-    </main>
+    </>
   );
 }
