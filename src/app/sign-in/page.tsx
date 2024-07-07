@@ -1,5 +1,6 @@
 "use client";
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -8,13 +9,12 @@ import styled from "styled-components";
 export default function SignInPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSignin = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setMessage("");
+    setIsError(false);
 
     const response = await fetch("/api/signin", {
       method: "POST",
@@ -23,7 +23,25 @@ export default function SignInPage() {
       },
       body: JSON.stringify({ email, password }),
     });
-    const data = await response.json();
+    if (response.ok) {
+      const data = await response.json();
+      router.push("/");
+    } else {
+      const error = await response.json();
+
+      setIsError(true);
+    }
+  };
+
+  const errorMessage = () => {
+    if (isError) {
+      return (
+        <div className="text-red-500 text-sm text-center">
+          아이디 또는 비밀번호가 잘못 되었습니다.
+          <br /> 아이디와 비밀번호를 정확히 입력해 주세요.
+        </div>
+      );
+    }
   };
   return (
     <>
@@ -47,6 +65,7 @@ export default function SignInPage() {
           type="password"
           errorMessage="text"
         />
+        {errorMessage()}
         <div style={{ margin: "14px 0" }}>
           <Button type="submit">로그인</Button>
         </div>
