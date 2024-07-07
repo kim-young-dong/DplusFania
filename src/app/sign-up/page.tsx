@@ -143,7 +143,7 @@ const SignupConfirm = () => {
     <>
       <div className="w-full flex flex-col items-center gap-12">
         <h2 className="text-xl text-center">
-          {"가입 메일을 발송했습니다.\n메일을 확인해주세요."}
+          회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
         </h2>
         <Link href={"/"} className="w-full">
           <Button>확인</Button>
