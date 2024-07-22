@@ -1,28 +1,30 @@
-import Link from "next/link";
 import PlayerCard from "@/components/PlayerCard";
-import Button from "@/components/Button";
+import Description from "@/components/Discription";
 import { GET_RANDOM_CARD } from "@/constant/card";
+import { cookies } from "next/headers";
+import { $supabase } from "@/app/lib/supabase";
 
-export default function Home() {
+export default async function Home() {
   const cardInfo = GET_RANDOM_CARD();
+
+  const getUser = async () => {
+    const token = cookies().get("access_token");
+
+    try {
+      const {
+        data: { user },
+      } = await $supabase.auth.getUser(token?.value);
+
+      return user;
+    } catch (error) {
+      return null;
+    }
+  };
+  const user = await getUser();
 
   return (
     <>
-      <div className="w-full flex flex-col items-center gap-4 text-center">
-        <h1 className="text-3xl font-bold">
-          Welcome to
-          <br /> Dplus Fania
-        </h1>
-        <div className="w-full flex flex-col justify-center items-center gap-8">
-          <p className="text-xl">
-            자신이 뽑은 카드를
-            <br /> 컬렉션에 추가해보세요!
-          </p>
-          <Link href={"/sign-in"} className="w-full">
-            <Button>로그인</Button>
-          </Link>
-        </div>
-      </div>
+      <Description isSignedIn={!!user} />
       <div className="flex flex-col items-center gap-2">
         <p>Click to Card</p>
         <PlayerCard
