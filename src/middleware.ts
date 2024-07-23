@@ -22,5 +22,5 @@ export async function middleware(req: NextApiRequest) {
   return user;
 }
 export const config = {
-  matcher: "/home/:path*",
+  matcher: ["/home/:path*"],
 };
