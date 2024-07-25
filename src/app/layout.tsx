@@ -41,12 +41,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <div className="flex justify-center">
-            <div className=" w-full h-full max-w-[400px]">
-              <main className="min-h-screen lg:p-12 p-4 flex flex-col items-center gap-4 overflow-hidden">
+            <div className=" max-w-[400px]">
+              <main className="lg:p-12 p-4 pb-12 mt-4 flex flex-col items-center gap-4 overflow-hidden">
                 {children}
               </main>
             </div>

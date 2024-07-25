@@ -2,18 +2,27 @@ import PlayerCard from "@/components/PlayerCard";
 import Description from "@/components/Discription";
 import { GET_RANDOM_CARD } from "@/constant/card";
 import { cookies } from "next/headers";
-import { $supabase } from "@/app/lib/supabase";
+import { createServerClient } from "@supabase/ssr";
 
 export default async function Home() {
   const cardInfo = GET_RANDOM_CARD();
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookies().getAll();
+        },
+      },
+    }
+  );
 
   const getUser = async () => {
-    const token = cookies().get("access_token");
-
     try {
       const {
         data: { user },
-      } = await $supabase.auth.getUser(token?.value);
+      } = await supabase.auth.getUser();
 
       return user;
     } catch (error) {
