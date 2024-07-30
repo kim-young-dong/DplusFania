@@ -1,5 +1,6 @@
 // pages/signup.tsx
 "use client";
+import { signup } from "../actions";
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import Input from "@/components/Input";
@@ -43,28 +44,34 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
     }
   };
 
-  const handleSignup = async (e: FormEvent) => {
-    setIsLoad(true);
+  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoad(true);
 
     if (!validatePassword()) {
       return false;
     } else {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onIsCompleteChange(true);
-      } else {
-        setError(data.message);
+      try {
+        await signup({ email, password });
+      } catch (error) {
+        console.log(error);
+        setError("회원가입에 실패했습니다.");
       }
+      // const response = await fetch("/api/signup", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ email, password }),
+      // });
+
+      // const data = await response.json();
+
+      // if (response.ok) {
+      //   onIsCompleteChange(true);
+      // } else {
+      //   setError(data.message);
+      // }
     }
     setIsLoad(false);
   };

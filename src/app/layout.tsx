@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "./lib/registry";
-import { Provider } from "react-redux";
-import store from "../store/store";
+import NavBar from "@/components/NavBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,15 +40,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={inter.className}>
         <StyledComponentsRegistry>
-          <div className="flex justify-center">
-            <div className=" w-full h-full max-w-[400px]">
-              <main className="min-h-screen lg:p-12 p-4 flex flex-col items-center gap-4 overflow-hidden">
-                {children}
-              </main>
-            </div>
+          <NavBar />
+          <div className="mt-[50px] flex justify-center">
+            <main className="lg:p-12 p-4 pb-12 flex flex-col items-center gap-4 ">
+              {children}
+            </main>
           </div>
         </StyledComponentsRegistry>
         {/* <Provider store={store}>

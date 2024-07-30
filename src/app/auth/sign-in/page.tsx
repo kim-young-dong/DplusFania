@@ -1,4 +1,5 @@
 "use client";
+import { signin } from "../actions";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -12,23 +13,13 @@ export default function SignInPage() {
   const [isError, setIsError] = useState<boolean>(false);
   const router = useRouter();
 
-  const handleSignin = async (e: FormEvent) => {
+  const handleSignin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsError(false);
 
-    const response = await fetch("/api/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      router.push("/");
-    } else {
-      const error = await response.json();
-
+    try {
+      await signin({ email, password });
+    } catch (error) {
       setIsError(true);
     }
   };
