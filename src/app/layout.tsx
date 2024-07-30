@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "./lib/registry";
+import { Provider } from "react-redux";
+import store from "../store/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,12 +46,14 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <div className="flex justify-center">
             <div className=" w-full h-full max-w-[400px]">
-              <main className="min-h-screen lg:p-12 p-4 flex flex-col items-center gap-4">
+              <main className="min-h-screen lg:p-12 p-4 flex flex-col items-center gap-4 overflow-hidden">
                 {children}
               </main>
             </div>
           </div>
         </StyledComponentsRegistry>
+        {/* <Provider store={store}>
+        </Provider> */}
       </body>
     </html>
   );
