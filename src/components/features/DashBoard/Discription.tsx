@@ -30,7 +30,7 @@ export default function Description({
               자신이 뽑은 카드를
               <br /> 컬렉션에 추가해보세요!
             </p>
-            <Link href={"/sign-in"} className="w-full">
+            <Link href={"/auth/sign-in"} className="w-full">
               <Button>로그인</Button>
             </Link>
           </div>

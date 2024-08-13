@@ -40,10 +40,10 @@ export async function updateSession(request: NextRequest) {
   if (!user) {
     // no user, potentially respond by redirecting the user to the login page
     if (
-      request.nextUrl.pathname !== "/sign-in" &&
-      request.nextUrl.pathname !== "/sign-up" &&
-      request.nextUrl.pathname !== "/find-id" &&
-      request.nextUrl.pathname !== "/find-password" &&
+      request.nextUrl.pathname !== "/auth/sign-in" &&
+      request.nextUrl.pathname !== "/auth/sign-up" &&
+      request.nextUrl.pathname !== "/auth/find-id" &&
+      request.nextUrl.pathname !== "/auth/find-password" &&
       request.nextUrl.pathname !== "/"
     ) {
       const url = request.nextUrl.clone();
@@ -54,10 +54,10 @@ export async function updateSession(request: NextRequest) {
     }
   } else {
     switch (true) {
-      case request.nextUrl.pathname == "/sign-in":
-      case request.nextUrl.pathname == "/sign-up":
-      case request.nextUrl.pathname == "/find-id":
-      case request.nextUrl.pathname == "/find-password":
+      case request.nextUrl.pathname == "/auth/sign-in":
+      case request.nextUrl.pathname == "/auth/sign-up":
+      case request.nextUrl.pathname == "/auth/find-id":
+      case request.nextUrl.pathname == "/auth/find-password":
         return NextResponse.redirect(new URL("/", request.url));
     }
   }
@@ -77,3 +77,16 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse;
 }
+// middleware의 header에 원하는 정보를 담아 보내는 것으로 데이터 공유 가능
+// import { headers } from "next/headers";로 headers를 import 해 사용
+// const headers = new Headers(request.headers);
+// headers.set("middlewareSet", "mydata");
+
+// const resp = NextResponse.next({
+//   request: {
+//     headers,
+//   },
+// });
+// console.log(resp, "resp");
+
+// return resp;

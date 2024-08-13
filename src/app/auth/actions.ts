@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import userStore from "@/constant/auth";
 
 export async function signin(formData: { email: string; password: string }) {
   // type-casting here for convenience
@@ -14,9 +15,10 @@ export async function signin(formData: { email: string; password: string }) {
   if (error) {
     redirect("/error");
   }
-
-  revalidatePath("/", "layout");
-  redirect("/");
+  if (data) {
+    revalidatePath("/", "layout");
+    redirect("/");
+  }
 }
 
 export async function signup(formData: { email: string; password: string }) {

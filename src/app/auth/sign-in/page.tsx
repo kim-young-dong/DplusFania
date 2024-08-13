@@ -72,7 +72,7 @@ export default function SignInPage() {
           }}
         >
           <span style={{ color: "#373737" }}>회원이 아니신가요?</span>
-          <Link href={"/sign-up"}>
+          <Link href={"/auth/sign-up"}>
             <span style={{ color: "#1E90FF", textDecoration: "underline" }}>
               회원가입
             </span>

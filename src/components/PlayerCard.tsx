@@ -7,10 +7,6 @@ import { round, clamp, getRandomNumber } from "@/constant/math";
 import { GET_RANDOM_CARD } from "@/constant/card";
 
 interface Card {
-  player: {
-    name: string;
-    position: string;
-  };
   imgURL: string;
 }
 
@@ -172,8 +168,8 @@ const PlayerCard = ({ card }: { card: Card }) => {
         onTouchEnd={interactEnd}
         onClick={activate}
       >
-        <div className="shadow"></div>
-        <Glare className="card__glare"></Glare>
+        <div className="card__shadow"></div>
+        <div className="card__glare"></div>
 
         <div
           className="card_back"
@@ -194,12 +190,7 @@ const PlayerCard = ({ card }: { card: Card }) => {
             visibility: isPickup ? "visible" : "hidden",
           }}
         >
-          <Image
-            src={card.imgURL}
-            alt={card.player.name}
-            width={340}
-            height={475}
-          />
+          <Image src={card.imgURL} alt="player_card" width={340} height={475} />
         </div>
       </CardRotater>
     </Card>
@@ -234,7 +225,7 @@ const Card = styled.div`
   }
 `;
 const CardRotater = styled.div`
-  width: 90%;
+  width: 80%;
   max-width: 340px;
   height: auto;
   max-height: 475px;
@@ -246,43 +237,46 @@ const CardRotater = styled.div`
   transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
   transition: all var(--transition-sec) ease;
 
-  .shadow {
+  div {
+    grid-area: 1/1;
+    transform-style: preserve-3d;
+  }
+  img {
+    -webkit-transform: translate3d(0px, 0px, 0.01px);
+    transform: translate3d(0px, 0px, 0.01px);
+  }
+
+  .card__shadow {
     border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
       0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
       0 0 20px 0px transparent;
   }
-  &:hover .shadow {
-    border-radius: 18px;
-    overflow: hidden;
+  &:hover .card__shadow {
     box-shadow: 0 0 3px -1px white, 0 0 3px 1px var(--card-edge),
       0 0 12px 2px var(--card-glow), 0px 10px 20px -5px white,
       0 0 40px -30px var(--card-glow), 0 0 50px -20px var(--card-glow);
-  }
-
-  * {
-    width: auto;
-    height: auto;
-    display: grid;
-    grid-area: 1/1;
-    transform-style: preserve-3d;
-  }
-  img {
-    height: auto;
-    -webkit-transform: translate3d(0px, 0px, 0.01px);
-    transform: translate3d(0px, 0px, 0.01px);
   }
 
   .card__glare {
     width: 100%;
     height: 100%;
     position: absolute;
+    z-index: 1;
     transform: translateZ(1.41px);
     overflow: hidden;
     mix-blend-mode: overlay;
-    z-index: 1;
+
+    background-image: radial-gradient(
+      farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 100%, 0.8) 10%,
+      hsla(0, 0%, 100%, 0.65) 20%,
+      hsla(0, 0%, 0%, 0) 90%
+    );
+    opacity: var(--glare-opacity);
   }
+
   .card_front,
   .card_front * {
     -webkit-backface-visibility: hidden;
@@ -295,13 +289,4 @@ const CardRotater = styled.div`
     -webkit-backface-visibility: visible;
     backface-visibility: visible;
   }
-`;
-const Glare = styled.div`
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 10%,
-    hsla(0, 0%, 100%, 0.65) 20%,
-    hsla(0, 0%, 0%, 0) 90%
-  );
-  opacity: var(--glare-opacity);
 `;

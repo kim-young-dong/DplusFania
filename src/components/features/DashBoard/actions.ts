@@ -1,47 +1,76 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
+import { GET_RANDOM_CARD, CARD } from "@/constant/card";
+import userStore from "@/constant/auth";
 
-export async function getCardInfo() {
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
+// Get
+export async function getTodaysCard() {
   const supabase = createClient();
 
-  const { data, error } = await supabase.from("test_product").select("*");
+  const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))
+    .toISOString()
+    .split("T")[0];
+
+  const { data, error } = await supabase
+    .from("card_products")
+    .select("*")
+    .gte("created_at", today)
+    .lt("created_at", tomorrow);
 
   if (error) {
     console.log(error);
   }
-  console.log({
-    ...data[0],
-    created_at: dateFormater(data[0].created_at),
-  });
 
-  return {
-    ...data[0],
-    created_at: dateFormater(data[0].created_at),
-  };
+  if (data && data.length > 0) {
+    return {
+      ...data[0],
+      created_at: dateFormater(data[0].created_at),
+    };
+  } else {
+    console.log("data is empth");
+    return null;
+  }
+}
+
+export async function randomCardPickup() {
+  const user = await userStore.getUser();
+
+  // user 또는 user.id가 undefined인 경우 함수 종료
+  if (!user || !user.id) {
+    console.log("User not found or user ID is undefined");
+    return;
+  }
+
+  const insertData: CARD_PRODUCT = { ...GET_RANDOM_CARD(), user_id: user?.id };
+
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("card_products")
+    .insert(insertData);
+
+  if (error) {
+    console.log(error);
+
+    // redirect("/error");
+  }
+  console.log(data, "data");
+  return;
 
   // revalidatePath("/", "layout");
   // redirect("/");
 }
 
-export async function randomCardPickup() {
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const supabase = createClient();
-
-  const { data, error } = await supabase
-    .from("test")
-    .insert({ id: 1, name: "Denmark" })
-    .select();
-
-  if (error) {
-    redirect("/error");
-  }
-
-  // revalidatePath("/", "layout");
-  // redirect("/");
+// 사용자 정보 타입 정의 (필요에 따라 변경)
+interface CARD_PRODUCT {
+  name: string;
+  player: {
+    name: string;
+    position: string;
+  };
+  imgURL: string;
+  user_id: string;
 }

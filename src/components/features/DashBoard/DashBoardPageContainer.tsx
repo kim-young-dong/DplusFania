@@ -1,27 +1,24 @@
 import PlayerCard from "@/components/PlayerCard";
 import Description from "@/components/features/DashBoard/Discription";
-import { getCardInfo } from "./actions";
-import { useUserInfo } from "@/utils/hook/useUserInfo";
-import { GET_RANDOM_CARD } from "@/constant/card";
+import { getTodaysCard, randomCardPickup } from "./actions";
+import userStore from "@/constant/auth";
 
 export default async function DashBoard() {
-  const cardInfo = GET_RANDOM_CARD();
-  const randomCardPickup = async () => {};
-  const user = useUserInfo();
-  await getCardInfo();
+  const CARD_DATA = await getTodaysCard();
+  const user = userStore.getUser();
+
+  if (!CARD_DATA) {
+    await randomCardPickup();
+  }
 
   return (
     <>
       <Description isSignedIn={!!user} />
+      <p className="text-sm">카드를 클릭해보세요</p>
       <div className="flex flex-col items-center gap-2">
-        <p>Click to Card</p>
         <PlayerCard
           card={{
-            player: {
-              name: cardInfo.player,
-              position: cardInfo.position,
-            },
-            imgURL: cardInfo.imgURL,
+            imgURL: CARD_DATA?.imgURL,
           }}
         />
       </div>
