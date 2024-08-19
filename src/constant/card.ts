@@ -1,12 +1,4 @@
 import { getRandomNumber } from "@/constant/math";
-interface CARD {
-  name: string;
-  player: {
-    name: string;
-    position: string;
-  };
-  imgURL: string;
-}
 
 const BUCKT_URL =
   "https://ncxbzukabsvxtmxrfwzx.supabase.co/storage/v1/object/public/player-card-bucket";
@@ -28,7 +20,7 @@ const GET_RANDOM_CARD = () => {
   const position = POSITIONS[PLAYERS.indexOf(player_name)];
   const type = CARD_TYPES[getRandomNumber(CARD_TYPES.length - 1)];
 
-  const card_product: CARD = {
+  const card_product = {
     name: `${type}_${player_name}`,
     player: {
       name: player_name,
@@ -40,4 +32,3 @@ const GET_RANDOM_CARD = () => {
 };
 
 export { PLAYERS, CARD_TYPES, GET_RANDOM_CARD };
-export type { CARD };

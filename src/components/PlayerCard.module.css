@@ -1,0 +1,91 @@
+.card_container {
+  display: flex;
+  justify-content: center;
+  perspective: 600px;
+  position: relative;
+  z-index: 0;
+}
+
+.card_translater {
+  display: grid;
+  width: 80%;
+  max-width: 340px;
+  max-height: 475px;
+
+  position: relative;
+
+  aspect-ratio: 340 / 475;
+  border-radius: 18px;
+
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+  transition: all var(--transition-sec) ease;
+
+  box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
+    0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
+    0 0 20px 0px transparent;
+
+  &:hover {
+    box-shadow: 0 0 3px -1px white, 0 0 3px 1px var(--card-edge),
+      0 0 12px 2px var(--card-glow), 0px 10px 20px -5px white,
+      0 0 40px -30px var(--card-glow), 0 0 50px -20px var(--card-glow);
+  }
+}
+
+.card_item {
+  position: relative;
+  grid-area: 1/1;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+@keyframes pickup {
+  0% {
+    transform: rotateY(0deg);
+  }
+  66% {
+    transform: rotateY(720deg);
+  }
+  75% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.pickup {
+  animation: pickup 1.5s ease-in-out;
+}
+
+.card_front {
+  position: relative;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  opacity: 0;
+}
+.pickup .card_front {
+  transition: opacity 0s 0.3s;
+  opacity: 1;
+}
+.card_back {
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+}
+
+.card_glare {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  /* transform: translateZ(1.41px); */
+  overflow: hidden;
+  mix-blend-mode: overlay;
+  opacity: var(--glare-opacity);
+
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0, 0%, 100%, 0.8) 10%,
+    hsla(0, 0%, 100%, 0.65) 20%,
+    hsla(0, 0%, 0%, 0) 90%
+  );
+  /* transition: opacity 0.3s; */
+}
