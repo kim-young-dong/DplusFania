@@ -1,5 +1,7 @@
-import { round, clamp, getRandomNumber } from "@/constant/math";
+import { getRandomNumber } from "@/constant/math";
 
+const BUCKT_URL =
+  "https://ncxbzukabsvxtmxrfwzx.supabase.co/storage/v1/object/public/player-card-bucket";
 const PLAYERS = ["kingen", "lucid", "showmaker", "aiming", "kellin"];
 const POSITIONS = ["TOP", "JUG", "MID", "BOT", "SUP"];
 const CARD_TYPES = [
@@ -10,18 +12,23 @@ const CARD_TYPES = [
   "hero",
   "shape",
   "brown",
-  "mint",
+  "normal",
   "navy",
 ];
 const GET_RANDOM_CARD = () => {
-  const player = PLAYERS[getRandomNumber(PLAYERS.length - 1)];
-  const position = POSITIONS[PLAYERS.indexOf(player)];
+  const player_name = PLAYERS[getRandomNumber(PLAYERS.length - 1)];
+  const position = POSITIONS[PLAYERS.indexOf(player_name)];
   const type = CARD_TYPES[getRandomNumber(CARD_TYPES.length - 1)];
-  return {
-    player,
-    position,
-    imgURL: `/images/cards/${player}/card_${type}.png`,
+
+  const card_product = {
+    name: `${type}_${player_name}`,
+    player: {
+      name: player_name,
+      position: position,
+    },
+    imgURL: `${BUCKT_URL}/${player_name}/card_${type}.png`,
   };
+  return card_product;
 };
 
 export { PLAYERS, CARD_TYPES, GET_RANDOM_CARD };

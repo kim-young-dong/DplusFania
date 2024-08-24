@@ -45,7 +45,7 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <NavBar />
           <div className="mt-[50px] flex justify-center">
-            <main className="lg:p-12 p-4 pb-12 flex flex-col items-center gap-4 ">
+            <main className="min-w-[340px] lg:p-12 p-4 pb-12 flex flex-col items-center gap-4 ">
               {children}
             </main>
           </div>

@@ -1,4 +1,4 @@
-import DashBoard from "@/components/features/DashBoard/DashBoardPageContainer";
+import DashBoard from "@/components/DashBoard/DashBoardPageContainer";
 
 export default async function Home() {
   return (
