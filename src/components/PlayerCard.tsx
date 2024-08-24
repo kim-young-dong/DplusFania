@@ -1,28 +1,16 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-// import style from "./styles/PlayerCard.module.css";
-import styled from "styled-components";
+import { randomCardPickup, CardProduct } from "@/actions/card";
 import { round, clamp, getRandomNumber } from "@/constant/math";
 import styles from "./PlayerCard.module.css";
 
-interface Card {
-  imgURL: string;
-}
-
-const CardContainer = ({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) => {
-  return <div className={styles.card_container}>{children}</div>;
-};
-
-const PlayerCard = ({ card }: { card: Card }) => {
+const PlayerCard = ({ initialCard }: { initialCard: CardProduct | null }) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
-  const [isPickedup, setIsPickedup] = useState(false); // 카드 pickup 상태
-  const [isActive, setIsActive] = useState(false); // 카드 active 상태
-  const [interacting, setInteracting] = useState(true); // 마우스 인터렉션 상태
+  const doingPopOver = useRef(false);
+
+  const [card, setCard] = useState<CardProduct | null>(initialCard); // 카드 이미지 URL
+  const [rotateDirectionY, setRotateDirectionY] = useState<360 | 0>(0); // Y축 회전 방향
   const [pointer, setPointer] = useState({ x: 0, y: 0 }); // 마우스 포인터 위치
   const [transform, setTransform] = useState({
     sec: 0,
@@ -30,15 +18,18 @@ const PlayerCard = ({ card }: { card: Card }) => {
     rotateY: 0,
   }); // 카드 회전 각도
 
-  // 카드가 active 상태일 때 360도 회전된 상태로 변경
-  const rotateDelta = useMemo(() => {
-    return isActive ? { x: 0, y: 360 } : { x: 0, y: 0 };
-  }, [isActive]);
+  // 카드를 원래 자리로 돌려놓는 이벤트
+  useEffect(() => {
+    setPointer({ x: 0, y: 0 });
+    setTransform({
+      sec: 1,
+      rotateX: 0,
+      rotateY: 0 + rotateDirectionY,
+    });
+  }, [rotateDirectionY]);
 
   // 광택 효과
   const glareStyle = useMemo(() => {
-    if (interacting === false) return { x: 0, y: 0, o: 0 };
-
     const percent = {
       x: clamp(round((100 / 340) * pointer.x)),
       y: clamp(round((100 / 490) * pointer.y)),
@@ -48,8 +39,9 @@ const PlayerCard = ({ card }: { card: Card }) => {
       y: `${percent.y}%`,
       o: pointer.x * pointer.y > 0 ? 1 : 0,
     };
-  }, [pointer, interacting]);
+  }, [pointer]);
 
+  // 동적 스타일
   const dynamicStyles = {
     "--pointer-x": glareStyle.x,
     "--pointer-y": glareStyle.y,
@@ -66,7 +58,8 @@ const PlayerCard = ({ card }: { card: Card }) => {
   const interact = (
     event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
   ) => {
-    if (interacting === false) return;
+    if (doingPopOver.current === true) return;
+
     let offsetX, offsetY;
     // 이벤트 타입에 따라 offsetX, offsetY 값을 설정
     if (event.nativeEvent instanceof MouseEvent) {
@@ -91,62 +84,59 @@ const PlayerCard = ({ card }: { card: Card }) => {
     setTransform({
       sec: 0,
       rotateX: round((offsetY / 380) * 60 - 30),
-      rotateY: round((offsetX / 270) * 60 - 30 + rotateDelta.y),
+      rotateY: round((offsetX / 270) * 60 - 30 + rotateDirectionY),
     });
-  };
-  const interactEnd = () => {
-    if (interacting === true) {
-      setPointer({ x: 0, y: 0 });
-      setTransform({
-        sec: 1,
-        rotateX: 0,
-        rotateY: 0 + rotateDelta.y,
-      });
-    }
   };
 
   // 클릭 이벤트
-  const activate = () => {
-    if (isPickedup) {
-      const popover = () => {
-        if (interacting === false) return;
-        setIsActive((pre) => !pre);
-        setPointer({ x: 0, y: 0 });
-        if (isActive === true) {
-          setTransform({ sec: 1, rotateX: 0, rotateY: 0 });
-        } else {
-          setTransform({ sec: 1, rotateX: 0, rotateY: 360 });
-        }
-        setInteracting(false);
-        setTimeout(() => {
-          setInteracting(true);
-        }, 1000);
-      };
-      popover();
-    } else {
-      const cardPickup = () => {
-        setIsPickedup(true);
-        setTimeout(() => {
-          setInteracting(true);
-        }, 1000);
-      };
-      cardPickup();
-    }
+  const popover = () => {
+    if (doingPopOver.current === true) return;
+
+    doingPopOver.current = true;
+    setRotateDirectionY((prev) => (prev === 0 ? 360 : 0));
+
+    setTimeout(() => {
+      doingPopOver.current = false;
+    }, 1000);
+  };
+
+  // 카드 픽업 이벤트
+  const cardPickup = async () => {
+    const newCard = await randomCardPickup();
+    cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
+
+    setTimeout(() => {
+      setCard(newCard);
+    }, 300);
   };
 
   return (
-    <CardContainer>
+    <div className={styles.card_container}>
       <div
         ref={cardTranslaterRef}
-        className={`${styles["card_translater"]} ${
-          isPickedup ? styles["pickup"] : ""
-        }`}
+        className={styles["card_translater"]}
         style={dynamicStyles}
         onMouseMove={interact}
         onTouchMove={interact}
-        onMouseOut={interactEnd}
-        onTouchEnd={interactEnd}
-        onClick={activate}
+        onMouseLeave={() => {
+          if (doingPopOver.current === false) {
+            setTransform({
+              sec: 1,
+              rotateX: 0,
+              rotateY: 0 + rotateDirectionY,
+            });
+          }
+        }}
+        onTouchEnd={() => {
+          if (doingPopOver.current === false) {
+            setTransform({
+              sec: 1,
+              rotateX: 0,
+              rotateY: 0 + rotateDirectionY,
+            });
+          }
+        }}
+        onClick={!!card ? popover : cardPickup}
       >
         <div className={`${styles.card_item} ${styles.card_back}`}>
           <Image
@@ -157,20 +147,20 @@ const PlayerCard = ({ card }: { card: Card }) => {
             height={475}
           />
         </div>
-        <div className={`${styles.card_item} ${styles.card_front}`}>
-          <div className={styles["card_glare"]}></div>
-          <Image
-            className={styles.card_front}
-            src={
-              "https://ncxbzukabsvxtmxrfwzx.supabase.co/storage/v1/object/public/player-card-bucket/lucid/card_galaxy.png"
-            }
-            alt={"card_back"}
-            width={340}
-            height={475}
-          />
-        </div>
+        {card && (
+          <div className={`${styles.card_item} ${styles.card_front}`}>
+            <div className={styles["card_glare"]}></div>
+            <Image
+              className={styles.card_front}
+              src={card?.imgURL}
+              alt={"card_front"}
+              width={340}
+              height={475}
+            />
+          </div>
+        )}
       </div>
-    </CardContainer>
+    </div>
   );
 };
 
