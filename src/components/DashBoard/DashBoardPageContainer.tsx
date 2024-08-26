@@ -5,7 +5,7 @@ import userStore from "@/constant/auth";
 
 export default async function DashBoard() {
   const toDaysCard: CardProduct | null = await getTodaysCard();
-  const user = userStore.getUser();
+  const user = await userStore.getUser();
 
   return (
     <>

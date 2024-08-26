@@ -1,6 +1,6 @@
 // pages/signup.tsx
 "use client";
-import { signup } from "../actions";
+import { signup } from "@/actions/auth";
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import Input from "@/components/Input";
@@ -49,6 +49,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
     setIsLoad(true);
 
     if (!validatePassword()) {
+      setIsLoad(false);
       return false;
     } else {
       try {

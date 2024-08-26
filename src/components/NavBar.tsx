@@ -1,14 +1,23 @@
 "use client";
 import Link from "next/link";
 import styled from "styled-components";
+import Button from "./Button";
+import { signout } from "@/actions/auth";
 
 const NavBar = () => {
+  const handleSignOut = async () => {
+    await signout();
+  };
+
   return (
     <Wrapper>
       <div>Logo</div>
       <NabItems>
         <li>
           <Link href={"/"}>About</Link>
+        </li>
+        <li>
+          <Button onClick={handleSignOut}>로그아웃</Button>
         </li>
       </NabItems>
     </Wrapper>

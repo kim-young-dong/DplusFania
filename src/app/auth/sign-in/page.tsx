@@ -1,5 +1,5 @@
 "use client";
-import { signin } from "../actions";
+import { signin } from "@/actions/auth";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
