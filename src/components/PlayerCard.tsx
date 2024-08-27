@@ -1,15 +1,20 @@
 "use client";
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { randomCardPickup, CardProduct } from "@/actions/card";
 import { round, clamp, getRandomNumber } from "@/constant/math";
 import styles from "./PlayerCard.module.css";
 
-const PlayerCard = ({ initialCard }: { initialCard: CardProduct | null }) => {
+const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
+  const test = useRef();
 
-  const [card, setCard] = useState<CardProduct | null>(initialCard); // 카드 이미지 URL
+  const [cardData, setCardData] = useState<CardProduct | null>(
+    todaysCard || null
+  );
+
   const [rotateDirectionY, setRotateDirectionY] = useState<360 | 0>(0); // Y축 회전 방향
   const [pointer, setPointer] = useState({ x: 0, y: 0 }); // 마우스 포인터 위치
   const [transform, setTransform] = useState({
@@ -87,6 +92,14 @@ const PlayerCard = ({ initialCard }: { initialCard: CardProduct | null }) => {
       rotateY: round((offsetX / 270) * 60 - 30 + rotateDirectionY),
     });
   };
+  const interactEnd = () => {
+    setPointer({ x: 0, y: 0 });
+    setTransform({
+      sec: 1,
+      rotateX: 0,
+      rotateY: 0 + rotateDirectionY,
+    });
+  };
 
   // 클릭 이벤트
   const popover = () => {
@@ -102,60 +115,68 @@ const PlayerCard = ({ initialCard }: { initialCard: CardProduct | null }) => {
 
   // 카드 픽업 이벤트
   const cardPickup = async () => {
-    const newCard = await randomCardPickup();
-    cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
-
-    setTimeout(() => {
-      setCard(newCard);
-    }, 300);
+    // insert card to collection
+    try {
+      setCardData(await randomCardPickup());
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <div className={styles.card_container}>
+    <div className={styles.card_container} style={dynamicStyles}>
       <div
         ref={cardTranslaterRef}
         className={styles["card_translater"]}
-        style={dynamicStyles}
+        onClick={!!todaysCard ? popover : cardPickup}
         onMouseMove={interact}
         onTouchMove={interact}
         onMouseLeave={() => {
           if (doingPopOver.current === false) {
-            setTransform({
-              sec: 1,
-              rotateX: 0,
-              rotateY: 0 + rotateDirectionY,
-            });
+            interactEnd();
           }
         }}
         onTouchEnd={() => {
           if (doingPopOver.current === false) {
-            setTransform({
-              sec: 1,
-              rotateX: 0,
-              rotateY: 0 + rotateDirectionY,
-            });
+            interactEnd();
           }
         }}
-        onClick={!!card ? popover : cardPickup}
       >
         <div className={`${styles.card_item} ${styles.card_back}`}>
           <Image
             className={styles.card_back}
             src={"/images/cards/card_back.png"}
-            alt={"card_back"}
+            alt={"카드 뒷면"}
             width={340}
             height={475}
           />
         </div>
-        {card && (
+        {cardData && (
           <div className={`${styles.card_item} ${styles.card_front}`}>
             <div className={styles["card_glare"]}></div>
             <Image
               className={styles.card_front}
-              src={card?.imgURL}
-              alt={"card_front"}
+              src={cardData?.imgURL}
+              alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
               width={340}
               height={475}
+              onLoad={() => {
+                if (cardData && !todaysCard) {
+                  document.documentElement.style.setProperty(
+                    "--card-front-opacity",
+                    "0"
+                  );
+                  cardTranslaterRef.current?.classList.add(
+                    styles["pickup_active"]
+                  );
+                  setTimeout(() => {
+                    document.documentElement.style.setProperty(
+                      "--card-front-opacity",
+                      "1"
+                    );
+                  }, 1200);
+                }
+              }}
             />
           </div>
         )}
