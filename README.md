@@ -1,21 +1,23 @@
 # **DplusFania - Dplus KIA 팬들을 위한 놀이터**
 
-### **📝 프로젝트 소개**
+### 프로젝트 소개
 
-DplusFania 는 리그오브레전드 프로팀 Dpluskia의 팬들을 위한 웹 사이트입니다.
+ Dplus Fania는 리그오브레전드 e스포츠팀 DplusKIA 선수들의 랜덤 포토카드를 수집하는 프로젝트 입니다.
 
-Dplus KIA 팬 분들은 시스템에서 제공하는 선수들의 랜덤 포토카드 뽑아 자신의 컬렉션에 추가 가능합니다.
+ supabase, Next.js를 사용해 혼자서 프론트엔드와 백엔드를 구축해 하나의 서비스를 제작하려고 아이디어를 모으던 중, 내가 좋아하는 DplusKIA를 좋아해주는 다른 팬들이 재밌게 즐길 수 있는 사이트를 만들면 좋겠다는 생각에 해당 프로젝트를 기획했습니다.
 
-포토카드 뽑기 뿐만 아니라 앞으로도 Dplus KIA 팬들이 재밌게 즐길 수 있는 새로운 컨텐츠를 추가할 예정입니다.
+### **기술 스택**
 
-부디 저를 비롯한 Dplus KIA 팬 여러분들이 재밌는 시간을 보낼 수 있기를 바랍니다.
-
----
-
-### **📃 프로젝트 특징**
-
-- 1일 1회 Dplus KIA 선수들의 랜덤 포토카드를 뽑을 수 있다.
-- 뽑은 포토카드를 자신의 컬렉션에 추가해 감상할 수 있다.
+- **Base**
+    - [JavaScript](https://developer.mozilla.org/ko/docs/Web/JavaScript), [TypeScript](https://www.typescriptlang.org/)
+- **Frontend**
+    - [React](https://ko.react.dev/)
+    - [Next.js 14](https://nextjs.org/)
+    - [tailwind CSS](https://tailwindcss.com/)
+    - [~~styled-components~~](https://styled-components.com/)
+- **Backend | CI/CD**
+    - [supabase](https://supabase.com)
+    - [vercel](https://vercel.com/)
 ---
 
 ### **🖼️ 프로젝트 주소**
