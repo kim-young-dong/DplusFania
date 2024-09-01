@@ -24,11 +24,32 @@ export async function signin(formData: { email: string; password: string }) {
 export async function signup(formData: { email: string; password: string }) {
   // type-casting here for convenience
   // in practice, you should validate your inputs
+
   const supabase = createClient();
 
   const { error } = await supabase.auth.signUp(formData);
 
   if (error) {
+    console.log(error);
+
+    return error;
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+
+export async function signout() {
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.log(error);
+
     return error;
   }
 

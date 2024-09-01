@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
-import { GET_RANDOM_CARD } from "@/constant/card";
+import { getRandomNumber } from "@/constant/math";
 import userStore from "@/constant/auth";
 import { z } from "zod";
 
@@ -22,6 +22,19 @@ const zCard = z.object({
 export type CardProduct = z.infer<typeof zCard>;
 
 // Get
+export async function getRandomCard() {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("products").select("*");
+
+  if (error) {
+    console.log(error);
+  }
+  const card = data ? data[getRandomNumber(data.length - 1)] : null;
+  delete card?.id;
+
+  return card;
+}
+
 export async function getTodaysCard(): Promise<CardProduct | null> {
   const supabase = createClient();
 
@@ -31,7 +44,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
     .split("T")[0];
 
   const { data, error } = await supabase
-    .from("card_products")
+    .from("collection")
     .select("*")
     .gte("created_at", today)
     .lt("created_at", tomorrow);
@@ -51,28 +64,31 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
   }
 }
 
+// Post
 export async function randomCardPickup(): Promise<CardProduct | null> {
-  const user = await userStore.getUser();
+  const supabase = createClient();
 
+  const user = await userStore.getUser();
   // user 또는 user.id가 undefined인 경우 함수 종료
   if (!user || !user.id) {
     console.log("User not found or user ID is undefined");
+    // 추가로 에러 처리 로직을 작성해야 함
     redirect("/");
+    return null;
   }
-
-  const insertData: CardProduct = { ...GET_RANDOM_CARD(), user_id: user.id };
-
-  const supabase = createClient();
+  const insertData: CardProduct = await getRandomCard();
 
   const { data, error } = await supabase
-    .from("card_products")
-    .insert(insertData);
+    .from("collection")
+    .insert({ ...insertData, user_id: user.id });
 
   if (error) {
     console.log(error);
-
+    // 추가로 에러 처리 로직을 작성해야 함
     // redirect("/error");
+    return null;
   }
+
   return await getTodaysCard();
 
   // revalidatePath("/", "layout");
