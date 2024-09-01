@@ -21,9 +21,7 @@ supabase, Next.js를 사용해 혼자서 프론트엔드와 백엔드를 구축�
 
 ---
 
-### **프로젝트 주소**
-
-### **프로젝트 주소**
+### **🖼️ 프로젝트 주소**
 
 [Dplus Fania](https://dplusfania.vercel.app/)
 
