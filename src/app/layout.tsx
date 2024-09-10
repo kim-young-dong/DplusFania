@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "./lib/registry";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/NavBar/index";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,16 +18,7 @@ export const metadata: Metadata = {
     "포토카드",
     "뽑기",
     "포카뽑기",
-    "쇼메이커",
-    "showmaker",
-    "킹겐",
-    "kingen",
-    "루시드",
-    "lucid",
-    "에이밍",
-    "aiming",
-    "켈린",
-    "kellin",
+    "포카",
   ],
   icons: {
     icon: "/favicon.png",

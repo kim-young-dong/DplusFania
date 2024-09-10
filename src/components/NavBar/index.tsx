@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import styles from "./styles.module.css";
 import styled from "styled-components";
-import Button from "./Button";
+import Button from "../Button";
 import { signout } from "@/actions/auth";
 
 const NavBar = () => {
@@ -10,17 +11,18 @@ const NavBar = () => {
   };
 
   return (
-    <Wrapper>
-      <div>Logo</div>
-      <NabItems>
+    <nav className={styles.nav_wrapper}>
+      <ul className={styles.nav_list}>
         <li>
-          <Link href={"/"}>About</Link>
+          <Link href={"/"}>
+            <div>Logo</div>
+          </Link>
         </li>
         <li>
           <Button onClick={handleSignOut}>로그아웃</Button>
         </li>
-      </NabItems>
-    </Wrapper>
+      </ul>
+    </nav>
   );
 };
 
