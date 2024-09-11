@@ -20,6 +20,10 @@
     - [vercel](https://vercel.com/)
 ---
 
-### **🖼️ 프로젝트 주소**
+### **프로젝트 주소**
 
 [Dplus Fania](https://dplusfania.vercel.app/)
+
+---
+### **프로젝트 개발 기록**
+[velog](https://velog.io/@opa9904/series/%ED%86%A0%EC%9D%B4%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8)
