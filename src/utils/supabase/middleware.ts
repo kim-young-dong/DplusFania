@@ -16,17 +16,17 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // IMPORTANT: Avoid writing any logic between createServerClient and
@@ -47,10 +47,8 @@ export async function updateSession(request: NextRequest) {
       request.nextUrl.pathname !== "/"
     ) {
       const url = request.nextUrl.clone();
-      url.pathname = "/sign-in";
+      url.pathname = "/auth/sign-in";
       return NextResponse.redirect(url);
-    } else {
-      return NextResponse.next();
     }
   } else {
     switch (true) {
