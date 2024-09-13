@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
 import Input from "@/components/Input";
-import Button from "@/components/Button";
+import Button from "@/components/Button/index";
 import styled from "styled-components";
 
 export default function SignInPage() {

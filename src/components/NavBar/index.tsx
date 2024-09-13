@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./styles.module.css";
-import Button from "../Button";
+import Button from "@/components/Button/index";
 
 import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";

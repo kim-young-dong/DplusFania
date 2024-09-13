@@ -29,14 +29,12 @@ export default Button;
 const Wrapper = styled.button`
   background-color: #1e90ff;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  align-content: center;
 
   color: #ffffff;
 
-  width: 100%;
   height: 44px;
+  padding: 0 16px;
   border: none;
   border-radius: 4px;
   box-sizing: border-box;

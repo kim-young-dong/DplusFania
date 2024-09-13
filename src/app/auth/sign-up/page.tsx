@@ -4,7 +4,7 @@ import { signup } from "@/actions/auth";
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import Input from "@/components/Input";
-import Button from "@/components/Button";
+import Button from "@/components/Button/index";
 import styled from "styled-components";
 
 interface ChildComponentProps {
@@ -81,7 +81,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
       {isLoad ? (
         <>
           <svg
-            className="animate-spin h-12 w-12 text-blue-400"
+            className="h-12 w-12 animate-spin text-blue-400"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -149,8 +149,8 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
 const SignupConfirm = () => {
   return (
     <>
-      <div className="w-full flex flex-col items-center gap-12">
-        <h2 className="text-xl text-center">
+      <div className="flex w-full flex-col items-center gap-12">
+        <h2 className="text-center text-xl">
           회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
         </h2>
         <Link href={"/"} className="w-full">
