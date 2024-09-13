@@ -1,12 +1,11 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import createClient from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
-import { getRandomNumber } from "@/constant/math";
 import userStore from "@/constant/auth";
-import { z } from "zod";
-
+import { getRandomNumber } from "@/constant/math";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 // 사용자 정보 타입 정의 (필요에 따라 변경)
 const zCard = z.object({
@@ -59,7 +58,6 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
       created_at: dateFormater(data[0].created_at),
     };
   } else {
-    console.log("data is empth");
     return null;
   }
 }

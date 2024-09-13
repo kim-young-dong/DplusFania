@@ -2,6 +2,7 @@
 import { signin } from "@/actions/auth";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/userContext";
 import Link from "next/link";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -12,13 +13,16 @@ export default function SignInPage() {
   const [password, setPassword] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const router = useRouter();
+  const { setUser } = useUser();
 
   const handleSignin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsError(false);
 
     try {
-      await signin({ email, password });
+      const user = await signin({ email, password });
+      setUser(user);
+      router.push("/");
     } catch (error) {
       setIsError(true);
     }
@@ -27,7 +31,7 @@ export default function SignInPage() {
   const errorMessage = () => {
     if (isError) {
       return (
-        <div className="text-red-500 text-sm text-center">
+        <div className="text-center text-sm text-red-500">
           아이디 또는 비밀번호가 잘못 되었습니다.
           <br /> 아이디와 비밀번호를 정확히 입력해 주세요.
         </div>

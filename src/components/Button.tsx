@@ -19,7 +19,7 @@ const Button = ({
   style,
 }: ButtonProps) => {
   return (
-    <Wrapper className={className} style={style} onClick={onClick} type={type}>
+    <Wrapper onClick={onClick} className={className} style={style} type={type}>
       {children}
     </Wrapper>
   );

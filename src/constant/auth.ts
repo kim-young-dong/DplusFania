@@ -1,9 +1,17 @@
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
+import createServerClient from "@/utils/supabase/server";
+import { z } from "zod";
+// 사용자 정보 타입 정의 (필요에 따라 변경)
+const zUser = z.nullable(
+  z.object({
+    id: z.string(),
+    email: z.string().optional(),
+  }),
+);
+type UserType = z.infer<typeof zUser>;
 
 class UserStore {
   private static instance: UserStore;
-  private user: User | null = null; // 사용자 정보 저장
+  private user: UserType | null = null; // 사용자 정보 저장
   private isAuthenticated: boolean = false; // 로그인 상태 확인
   private count: number = 0; // 테스트용
 
@@ -17,24 +25,13 @@ class UserStore {
   }
 
   // 사용자 정보 설정
-  public async setUser(user?: User): Promise<void> {
+  public async setUser(user?: UserType): Promise<void> {
     if (user) {
       this.user = user;
       this.isAuthenticated = true;
     } else {
       try {
-        const supabase = createServerClient(
-          process.env.SUPABASE_URL!,
-          process.env.SUPABASE_ANON_KEY!,
-          {
-            cookies: {
-              getAll() {
-                return cookies().getAll();
-              },
-            },
-          }
-        );
-
+        const supabase = createServerClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -54,7 +51,7 @@ class UserStore {
   }
 
   // 사용자 정보 가져오기
-  public async getUser(): Promise<User | null> {
+  public async getUser(): Promise<UserType | null> {
     if (!this.user) {
       await this.setUser();
     }
@@ -76,13 +73,6 @@ class UserStore {
     return this.count++;
   }
 }
-const userStore = UserStore.getInstance();
+const userStore = UserStore.getInstance(); // 싱글톤 패턴 적용
 
 export default userStore;
-
-// 사용자 정보 타입 정의 (필요에 따라 변경)
-interface User {
-  id: string;
-  // name: string;
-  email: string | undefined;
-}

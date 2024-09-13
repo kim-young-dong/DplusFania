@@ -9,7 +9,7 @@ export default async function DashBoard() {
 
   return (
     <>
-      <Description isSignedIn={!!user} />
+      <Description />
       <p className="text-sm">카드를 클릭해보세요</p>
       <PlayerCard todaysCard={todaysCard} />
     </>

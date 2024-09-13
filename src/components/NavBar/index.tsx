@@ -1,79 +1,59 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./styles.module.css";
-import styled from "styled-components";
 import Button from "../Button";
+
+import { useEffect, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useUser } from "@/context/userContext";
 import { signout } from "@/actions/auth";
 
-const NavBar = () => {
-  const handleSignOut = async () => {
-    await signout();
+export default function NavBar() {
+  const { user, setUser } = useUser();
+  const isSignedIn = useMemo(() => !!user, [user]);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleCliek = async () => {
+    if (isSignedIn) {
+      setUser(null);
+      await signout();
+      router.push("/");
+    } else {
+      console.log("로그인 페이지로 이동");
+
+      router.push("/auth/sign-in");
+    }
   };
 
-  return (
-    <nav className={styles.nav_wrapper}>
-      <ul className={styles.nav_list}>
-        <li>
-          <Link href={"/"}>
-            <div>Logo</div>
-          </Link>
-        </li>
-        <li>
-          <Button onClick={handleSignOut}>로그아웃</Button>
-        </li>
-      </ul>
-    </nav>
-  );
-};
-
-export default NavBar;
-
-const Wrapper = styled.nav`
-  position: fixed;
-
-  @media (min-width: 640px) {
-    top: 0;
-    left: 0;
+  if (pathname.includes("/auth")) {
+    return null;
+  } else {
+    return (
+      <nav className={styles.nav_wrapper}>
+        <ul className={styles.nav_list}>
+          <li>
+            <Link href={"/auth/sign-in"}>
+              <div className="flex items-center gap-2 text-lg font-bold">
+                <Image
+                  src={"/images/logo/logo_black.png"}
+                  alt={"Dplus Fania Logo"}
+                  width={50}
+                  height={50}
+                  priority
+                />
+                Dplus Fania
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Button onClick={handleCliek}>
+              {isSignedIn ? "로그아웃" : "로그인"}
+            </Button>
+          </li>
+        </ul>
+      </nav>
+    );
   }
-
-  @media (max-width: 640px) {
-    bottom: 0;
-  }
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  width: 100%;
-  height: 50px;
-  padding: 0 8px;
-
-  background-color: #000;
-  color: #fff;
-
-  border: none;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  box-sizing: border-box;
-`;
-const NabItems = styled.ul`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  height: 100%;
-
-  li {
-    width: 100%;
-    height: 100%;
-    padding: 0 4px;
-
-    a {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      height: 100%;
-    }
-  }
-`;
+}

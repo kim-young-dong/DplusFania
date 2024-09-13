@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import userStore from "@/constant/auth";
+//store에서 불러오는 방식으로 변경, api 호출을 최소화하기 위함
+// import { getUser } from "@/actions/auth";
+import { UserProvider } from "@/context/userContext";
 import StyledComponentsRegistry from "./lib/registry";
 import NavBar from "@/components/NavBar/index";
 
@@ -24,25 +28,26 @@ export const metadata: Metadata = {
     icon: "/favicon.png",
   },
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await userStore.getUser();
+
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <StyledComponentsRegistry>
-          <NavBar />
-          <div className="mt-[50px] flex justify-center">
-            <main className="min-w-[340px] lg:p-12 p-4 pb-12 flex flex-col items-center gap-4 ">
-              {children}
-            </main>
-          </div>
-        </StyledComponentsRegistry>
-        {/* <Provider store={store}>
-        </Provider> */}
+        <UserProvider initialUser={user}>
+          <StyledComponentsRegistry>
+            <NavBar />
+            <div className="mt-[50px] flex justify-center">
+              <main className="flex min-w-[340px] flex-col items-center gap-4 p-4 pb-12 lg:p-12">
+                {children}
+              </main>
+            </div>
+          </StyledComponentsRegistry>
+        </UserProvider>
       </body>
     </html>
   );
