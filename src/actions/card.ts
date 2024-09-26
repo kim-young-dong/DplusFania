@@ -11,7 +11,8 @@ import { z } from "zod";
 const zCard = z.object({
   name: z.string(),
   player: z.object({
-    name: z.string(),
+    type: z.string(),
+    player: z.string(),
     position: z.string(),
   }),
   imgURL: z.string(),

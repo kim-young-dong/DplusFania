@@ -21,8 +21,6 @@ export default function NavBar() {
       await signout();
       router.push("/");
     } else {
-      console.log("로그인 페이지로 이동");
-
       router.push("/auth/sign-in");
     }
   };
@@ -34,7 +32,7 @@ export default function NavBar() {
       <nav className={styles.nav_wrapper}>
         <ul className={styles.nav_list}>
           <li>
-            <Link href={"/auth/sign-in"}>
+            <Link href={"/"}>
               <div className="flex items-center gap-2 text-lg font-bold">
                 <Image
                   src={"/images/logo/logo_black.png"}

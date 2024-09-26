@@ -79,7 +79,10 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 
-  opacity: var(--card-front-opacity);
+  opacity: 1;
+  &.hidden {
+    opacity: 0;
+  }
 }
 
 .card_back {

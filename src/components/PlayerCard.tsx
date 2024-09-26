@@ -1,20 +1,39 @@
 "use client";
-import React, { useState, useMemo, useRef, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import { randomCardPickup, CardProduct } from "@/actions/card";
-import { round, clamp, getRandomNumber } from "@/constant/math";
+import { getRandomCard, randomCardPickup, CardProduct } from "@/actions/card";
+import { round, clamp } from "@/constant/math";
 import styles from "./PlayerCard.module.css";
 
-const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
+// 사용자 정의 CSS 변수를 포함하는 인터페이스 정의
+interface CustomCSSProperties extends React.CSSProperties {
+  "--pointer-x"?: string;
+  "--pointer-y"?: string;
+  "--glare-opacity"?: number;
+  "--rotate-x"?: string;
+  "--rotate-y"?: string;
+  "--transition-sec"?: string;
+  "--card-edge"?: string;
+  "--card-glow"?: string;
+  "--front-visibility"?: string;
+  "--front-opacity"?: number;
+}
+
+const PlayerCard = ({
+  todaysCard,
+  isSignedIn,
+}: {
+  readonly todaysCard: CardProduct | null;
+  isSignedIn: boolean;
+}) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
-  const test = useRef();
+  const cardFrontRef = useRef<HTMLDivElement>(null);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
-    todaysCard || null
+    todaysCard || null,
   );
-
+  const [isCardLoaded, setIsCardLoading] = useState(false);
   const [rotateDirectionY, setRotateDirectionY] = useState<360 | 0>(0); // Y축 회전 방향
   const [pointer, setPointer] = useState({ x: 0, y: 0 }); // 마우스 포인터 위치
   const [transform, setTransform] = useState({
@@ -33,11 +52,23 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
     });
   }, [rotateDirectionY]);
 
+  // 카드 로드시 발생하는 이벤트
+  // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
+  useEffect(() => {
+    if (isCardLoaded && !todaysCard) {
+      cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
+
+      const time = setTimeout(() => {
+        cardFrontRef.current?.classList.remove(styles["hidden"]);
+      }, 1000);
+    }
+  }, [isCardLoaded, todaysCard]);
+
   // 광택 효과
   const glareStyle = useMemo(() => {
     const percent = {
-      x: clamp(round((100 / 340) * pointer.x)),
-      y: clamp(round((100 / 490) * pointer.y)),
+      x: clamp(round((100 / 272) * pointer.x)),
+      y: clamp(round((100 / 380) * pointer.y)),
     };
     return {
       x: `${percent.x}%`,
@@ -47,7 +78,7 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
   }, [pointer]);
 
   // 동적 스타일
-  const dynamicStyles = {
+  const dynamicStyles: CustomCSSProperties = {
     "--pointer-x": glareStyle.x,
     "--pointer-y": glareStyle.y,
     "--glare-opacity": glareStyle.o,
@@ -56,12 +87,12 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
     "--transition-sec": `${transform.sec}s`,
     "--card-edge": "#FFEE93",
     "--card-glow": "#FFEE93",
-    "--front-visibility": "hidden",
+    "--front-visibility": isCardLoaded ? "visible" : "hidden",
   } as React.CSSProperties;
 
   // 마우스 인터렉션
   const interact = (
-    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if (doingPopOver.current === true) return;
 
@@ -117,9 +148,22 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
   const cardPickup = async () => {
     // insert card to collection
     try {
-      setCardData(await randomCardPickup());
+      const card = isSignedIn
+        ? await randomCardPickup()
+        : await getRandomCard();
+
+      cardFrontRef.current?.classList.add(styles["hidden"]);
+      setCardData(card);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handelClick = () => {
+    if (cardData) {
+      popover();
+    } else {
+      cardPickup();
     }
   };
 
@@ -128,7 +172,7 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
       <div
         ref={cardTranslaterRef}
         className={styles["card_translater"]}
-        onClick={!!todaysCard ? popover : cardPickup}
+        onClick={handelClick}
         onMouseMove={interact}
         onTouchMove={interact}
         onMouseLeave={() => {
@@ -151,35 +195,26 @@ const PlayerCard = ({ todaysCard }: { todaysCard: CardProduct | null }) => {
             height={475}
           />
         </div>
-        {cardData && (
-          <div className={`${styles.card_item} ${styles.card_front}`}>
-            <div className={styles["card_glare"]}></div>
-            <Image
-              className={styles.card_front}
-              src={cardData?.imgURL}
-              alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
-              width={340}
-              height={475}
-              onLoad={() => {
-                if (cardData && !todaysCard) {
-                  document.documentElement.style.setProperty(
-                    "--card-front-opacity",
-                    "0"
-                  );
-                  cardTranslaterRef.current?.classList.add(
-                    styles["pickup_active"]
-                  );
-                  setTimeout(() => {
-                    document.documentElement.style.setProperty(
-                      "--card-front-opacity",
-                      "1"
-                    );
-                  }, 1200);
-                }
-              }}
-            />
-          </div>
-        )}
+        <div
+          ref={cardFrontRef}
+          className={`${styles.card_item} ${styles.card_front}`}
+        >
+          {cardData && (
+            <>
+              <div className={styles["card_glare"]}></div>
+              <Image
+                className={styles.card_front}
+                src={cardData?.imgURL}
+                alt={`선수명: ${cardData.player.player} 카드명: ${cardData.name}`}
+                width={340}
+                height={475}
+                onLoad={() => {
+                  setIsCardLoading(true);
+                }}
+              />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
