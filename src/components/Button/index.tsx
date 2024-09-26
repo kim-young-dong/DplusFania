@@ -1,41 +1,44 @@
 "use client";
-import styled from "styled-components";
+import classNames from "classnames";
+import styles from "./styles.module.css";
 
 interface ButtonProps {
   children: React.ReactNode;
   type?: "button" | "submit" | "reset";
+  color?: string;
+  size?: string;
+  fullWidth?: boolean;
+  disable?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  active?: boolean;
   className?: string;
   style?: Record<string, string>;
 }
 
 const Button = ({
   children,
-  type,
+  type = "button",
   onClick,
-  active = false,
+  color = "primary",
+  size = "md",
+  fullWidth = false,
+  disable = false,
   className,
-  style,
 }: ButtonProps) => {
+  const buttonClass = classNames(
+    `bg-${color}`,
+    `btn-${size}`,
+    fullWidth && styles.fullWidth,
+    disable && "disable",
+    className,
+  );
   return (
-    <Wrapper onClick={onClick} className={className} style={style} type={type}>
+    <button
+      type={type}
+      onClick={onClick}
+      className={`${styles.button} ${buttonClass}`}
+    >
       {children}
-    </Wrapper>
+    </button>
   );
 };
 export default Button;
-
-const Wrapper = styled.button`
-  background-color: #1e90ff;
-
-  align-content: center;
-
-  color: #ffffff;
-
-  height: 44px;
-  padding: 0 16px;
-  border: none;
-  border-radius: 4px;
-  box-sizing: border-box;
-`;

@@ -6,7 +6,6 @@ import { useUser } from "@/context/userContext";
 import Link from "next/link";
 import Input from "@/components/Input";
 import Button from "@/components/Button/index";
-import styled from "styled-components";
 
 export default function SignInPage() {
   const [email, setEmail] = useState<string>("");
@@ -39,8 +38,8 @@ export default function SignInPage() {
     }
   };
   return (
-    <>
-      <SignHeader>로그인</SignHeader>
+    <div className="mx-auto max-w-[520px]">
+      <div className="flex items-center justify-around">로그인</div>
       <form onSubmit={handleSignin} className="w-full">
         <Input
           id="email"
@@ -61,40 +60,20 @@ export default function SignInPage() {
           errorMessage="text"
         />
         {errorMessage()}
-        <div style={{ margin: "14px 0" }}>
-          <Button type="submit">로그인</Button>
+        <div className="my-4">
+          <Button type="submit" fullWidth={true}>
+            로그인
+          </Button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#373737",
-            fontSize: "10px",
-            lineHeight: "14px",
-            gap: "4px",
-          }}
-        >
-          <span style={{ color: "#373737" }}>회원이 아니신가요?</span>
+        <div className="text-center">
+          <span className="mr-2" style={{ color: "#373737" }}>
+            회원이 아니신가요?
+          </span>
           <Link href={"/auth/sign-up"}>
-            <span style={{ color: "#1E90FF", textDecoration: "underline" }}>
-              회원가입
-            </span>
+            <span className="font-semibold underline">회원가입</span>
           </Link>
         </div>
       </form>
-    </>
+    </div>
   );
 }
-
-const SignHeader = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  width: 100%;
-  height: 84px;
-  border-radius: 0 0 16px 16px;
-
-  box-sizing: border-box;
-`;

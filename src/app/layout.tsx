@@ -41,11 +41,9 @@ export default async function RootLayout({
         <UserProvider initialUser={user}>
           <StyledComponentsRegistry>
             <NavBar />
-            <div className="mt-[50px] flex justify-center">
-              <main className="flex min-w-[340px] flex-col items-center gap-4 p-4 pb-12 lg:p-12">
-                {children}
-              </main>
-            </div>
+            <main className="mx-auto mt-16 block max-w-7xl content-center p-4 pb-12 lg:p-12">
+              {children}
+            </main>
           </StyledComponentsRegistry>
         </UserProvider>
       </body>

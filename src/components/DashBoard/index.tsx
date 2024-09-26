@@ -4,14 +4,13 @@ import { getTodaysCard, getRandomCard, CardProduct } from "@/actions/card";
 import userStore from "@/constant/auth";
 
 export default async function DashBoard() {
-  const todaysCard: CardProduct | null = await getTodaysCard();
   const user = await userStore.getUser();
+  const todaysCard: CardProduct | null = await getTodaysCard();
 
   return (
-    <>
+    <div className="flex flex-col items-center">
       <Description />
-      <p className="text-sm">카드를 클릭해보세요</p>
-      <PlayerCard todaysCard={todaysCard} />
-    </>
+      <PlayerCard todaysCard={todaysCard} isSignedIn={!!user} />
+    </div>
   );
 }
