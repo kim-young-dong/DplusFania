@@ -3,9 +3,8 @@
 import { signup } from "@/actions/auth";
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import Input from "@/components/Input";
+import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
-import styled from "styled-components";
 
 interface ChildComponentProps {
   onIsCompleteChange: (newState: boolean) => void;
@@ -106,31 +105,30 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
           <Input
             id="email"
             title="이메일 주소"
-            onChange={(e) => {
+            handleChange={(e) => {
               setEmail(e.target.value);
             }}
             value={email}
             type="email"
-            errorMessage="text"
           />
           <Input
             id="password"
             title="비밀번호"
-            onChange={(e) => setPassword(e.target.value)}
+            handleChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
-            errorMessage="text"
           />
           <Input
             id="passwordCheck"
             title="비밀번호 확인"
-            onChange={(e) => setPasswordCheck(e.target.value)}
+            handleChange={(e) => setPasswordCheck(e.target.value)}
             value={passwordCheck}
             type="password"
-            errorMessage="text"
           />
           <div style={{ margin: "14px 0" }}>
-            <Button type="submit">회원가입</Button>
+            <Button type="submit" size="lg" fullWidth={true}>
+              회원가입
+            </Button>
           </div>
           <div
             style={{
@@ -165,24 +163,13 @@ export default function Signup() {
   const [signupComplete, setSignupComplete] = useState<boolean>(false);
 
   return (
-    <>
-      <SignHeader>회원가입</SignHeader>
+    <div className="mx-auto max-w-[520px]">
+      <div className="flex items-center justify-around">회원가입</div>
       {signupComplete ? (
         <SignupConfirm />
       ) : (
         <SignupForm onIsCompleteChange={setSignupComplete} />
       )}
-    </>
+    </div>
   );
 }
-const SignHeader = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  width: 100%;
-  height: 84px;
-  border-radius: 0 0 16px 16px;
-
-  box-sizing: border-box;
-`;

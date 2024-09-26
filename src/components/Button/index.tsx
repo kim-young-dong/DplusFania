@@ -1,5 +1,5 @@
 "use client";
-import classNames from "classnames";
+import cn from "classnames";
 import styles from "./styles.module.css";
 
 interface ButtonProps {
@@ -24,19 +24,30 @@ const Button = ({
   disable = false,
   className,
 }: ButtonProps) => {
-  const buttonClass = classNames(
-    `bg-${color}`,
-    `btn-${size}`,
-    fullWidth && styles.fullWidth,
-    disable && "disable",
-    className,
-  );
+  const classes = (() => {
+    const btnColor = `bg-${color}`;
+    const btnSize = (() => {
+      switch (size) {
+        case "sm":
+          return "px-2 py-1 text-sm";
+        case "lg":
+          return "px-6 py-3 text-md";
+        default:
+          return "px-4 py-2 text-sm";
+      }
+    })();
+
+    return cn(
+      styles.button,
+      btnColor,
+      btnSize,
+      { "w-full justify-center": fullWidth, disable: disable },
+      className,
+    );
+  })();
+
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      className={`${styles.button} ${buttonClass}`}
-    >
+    <button type={type} onClick={onClick} className={classes}>
       {children}
     </button>
   );

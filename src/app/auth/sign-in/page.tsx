@@ -4,13 +4,25 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
-import Input from "@/components/Input";
+import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(9),
+});
 
 export default function SignInPage() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [signinData, setSigninData] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
   const [isError, setIsError] = useState<boolean>(false);
+
   const router = useRouter();
   const { setUser } = useUser();
 
@@ -19,7 +31,7 @@ export default function SignInPage() {
     setIsError(false);
 
     try {
-      const user = await signin({ email, password });
+      const user = await signin(signinData);
       setUser(user);
       router.push("/");
     } catch (error) {
@@ -30,9 +42,9 @@ export default function SignInPage() {
   const errorMessage = () => {
     if (isError) {
       return (
-        <div className="text-center text-sm text-red-500">
-          아이디 또는 비밀번호가 잘못 되었습니다.
-          <br /> 아이디와 비밀번호를 정확히 입력해 주세요.
+        <div className="text-xs text-red-500">
+          아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히
+          입력해 주세요.
         </div>
       );
     }
@@ -44,24 +56,24 @@ export default function SignInPage() {
         <Input
           id="email"
           title="이메일 주소"
-          onChange={(e) => {
-            setEmail(e.target.value);
+          handleChange={(e) => {
+            setSigninData({ ...signinData, email: e.target.value });
           }}
-          value={email}
+          value={signinData.email}
           type="email"
-          errorMessage="text"
         />
         <Input
           id="password"
           title="비밀번호"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
+          handleChange={(e) =>
+            setSigninData({ ...signinData, password: e.target.value })
+          }
+          value={signinData.password}
           type="password"
-          errorMessage="text"
         />
         {errorMessage()}
         <div className="my-4">
-          <Button type="submit" fullWidth={true}>
+          <Button type="submit" size="lg" fullWidth={true}>
             로그인
           </Button>
         </div>
