@@ -7,7 +7,6 @@ import Button from "@/components/Button/index";
 import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
-import { signout } from "@/actions/auth";
 
 export default function NavBar() {
   const { user, setUser } = useUser();
@@ -17,9 +16,19 @@ export default function NavBar() {
 
   const handleCliek = async () => {
     if (isSignedIn) {
-      setUser(null);
-      await signout();
-      router.push("/");
+      const res = await fetch("/api/auth/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 200) {
+        setUser(null);
+        router.push("/");
+      } else {
+        console.log("로그아웃 실패");
+      }
     } else {
       router.push("/auth/sign-in");
     }
