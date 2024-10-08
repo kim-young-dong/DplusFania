@@ -5,10 +5,10 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useMemo,
   ReactNode,
 } from "react";
-import { z } from "zod";
+import { createClient } from "@/utils/supabase/client";
+import { set, z } from "zod";
 
 const zUser = z.nullable(
   z.object({
@@ -28,28 +28,27 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{
   children: ReactNode;
-  initialUser: UserType | null;
-}> = ({ children, initialUser }) => {
-  const [user, setUser] = useState<UserType | null>(initialUser);
+}> = ({ children }) => {
+  const [user, setUser] = useState<UserType | null>(null);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const user = await getUser();
-  //       if (user) {
-  //         setUser({
-  //           id: user.id,
-  //           email: user.email,
-  //         });
-  //       } else {
-  //         setUser(null);
-  //       }
-  //     } catch (error) {
-  //       setUser(null);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) {
+        setUser(null);
+      }
+
+      if (data && data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+        });
+      }
+    };
+    fetchUser();
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

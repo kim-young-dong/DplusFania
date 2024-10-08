@@ -6,7 +6,7 @@ import { useUser } from "@/context/userContext";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
-import { z } from "zod";
+import { set, z } from "zod";
 
 const schema = z.object({
   email: z.string().email(),
@@ -26,33 +26,30 @@ export default function SignInPage() {
   const router = useRouter();
   const { setUser } = useUser();
 
-  const handleSignin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsError(false);
 
-    try {
-      const user = await signin(signinData);
-      setUser(user);
-      router.push("/");
-    } catch (error) {
+    const res = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(signinData),
+    });
+
+    if (res.status === 200) {
+      const data = await res.json();
+      setUser(data.user);
+      // 로그인 성공 시 대시보드로 리디렉션
+      router.push("/dashboard");
+    } else {
       setIsError(true);
-    }
-  };
-
-  const errorMessage = () => {
-    if (isError) {
-      return (
-        <div className="text-xs text-red-500">
-          아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히
-          입력해 주세요.
-        </div>
-      );
     }
   };
   return (
     <div className="mx-auto max-w-[520px]">
       <div className="flex items-center justify-around">로그인</div>
-      <form onSubmit={handleSignin} className="w-full">
+      <form onSubmit={handleSubmit} className="w-full">
         <Input
           id="email"
           title="이메일 주소"
@@ -71,7 +68,11 @@ export default function SignInPage() {
           value={signinData.password}
           type="password"
         />
-        {errorMessage()}
+        {isError && (
+          <div className="text-left text-sm text-red-500">
+            Invalid email or password
+          </div>
+        )}
         <div className="my-4">
           <Button type="submit" size="lg" fullWidth={true}>
             로그인

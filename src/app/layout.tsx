@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import userStore from "@/constant/auth";
-//store에서 불러오는 방식으로 변경, api 호출을 최소화하기 위함
-// import { getUser } from "@/actions/auth";
 import { UserProvider } from "@/context/userContext";
 import StyledComponentsRegistry from "./lib/registry";
 import NavBar from "@/components/NavBar/index";
@@ -33,12 +30,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await userStore.getUser();
-
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <UserProvider initialUser={user}>
+        <UserProvider>
           <StyledComponentsRegistry>
             <NavBar />
             <main className="mx-auto mt-16 block max-w-7xl content-center p-4 pb-12 lg:p-12">
