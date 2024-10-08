@@ -1,17 +1,10 @@
 "use client";
-import { signin } from "@/actions/auth";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
-import { set, z } from "zod";
-
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(9),
-});
 
 export default function SignInPage() {
   const [signinData, setSigninData] = useState<{

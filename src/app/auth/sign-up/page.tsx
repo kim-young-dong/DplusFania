@@ -1,21 +1,23 @@
 // pages/signup.tsx
 "use client";
-import { signup } from "@/actions/auth";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
 
 interface ChildComponentProps {
-  onIsCompleteChange: (newState: boolean) => void;
+  setSignupComplete: (newState: boolean) => void;
 }
 
-const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
+const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
   const [isLoad, setIsLoad] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordCheck, setPasswordCheck] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const validatePassword = (): boolean => {
     const hasLetter = /[a-zA-Z]/.test(password); // 비밀번호에 문자가 있는지 확인
@@ -43,7 +45,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
     }
   };
 
-  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoad(true);
 
@@ -51,34 +53,26 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
       setIsLoad(false);
       return false;
     } else {
-      try {
-        await signup({ email, password });
-      } catch (error) {
-        console.log(error);
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.status === 200) {
+        setSignupComplete(true);
+      } else {
         setError("회원가입에 실패했습니다.");
       }
-      // const response = await fetch("/api/signup", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email, password }),
-      // });
-
-      // const data = await response.json();
-
-      // if (response.ok) {
-      //   onIsCompleteChange(true);
-      // } else {
-      //   setError(data.message);
-      // }
     }
     setIsLoad(false);
   };
   return (
     <>
       {isLoad ? (
-        <>
+        <div className="mx-auto mt-12 w-max">
           <svg
             className="h-12 w-12 animate-spin text-blue-400"
             xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +93,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-        </>
+        </div>
       ) : (
         <form onSubmit={handleSignup} className="w-full">
           <Input
@@ -146,16 +140,16 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
 };
 const SignupConfirm = () => {
   return (
-    <>
-      <div className="flex w-full flex-col items-center gap-12">
-        <h2 className="text-center text-xl">
-          회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
-        </h2>
-        <Link href={"/"} className="w-full">
-          <Button>확인</Button>
-        </Link>
-      </div>
-    </>
+    <div className="mt-24 flex w-full flex-col items-center gap-12">
+      <h2 className="text-center text-xl">
+        회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
+      </h2>
+      <Link href={"/"} className="w-full">
+        <Button size="lg" fullWidth={true}>
+          확인
+        </Button>
+      </Link>
+    </div>
   );
 };
 
@@ -168,7 +162,7 @@ export default function Signup() {
       {signupComplete ? (
         <SignupConfirm />
       ) : (
-        <SignupForm onIsCompleteChange={setSignupComplete} />
+        <SignupForm setSignupComplete={setSignupComplete} />
       )}
     </div>
   );
