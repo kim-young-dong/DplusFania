@@ -1,3 +1,4 @@
+import { getUser } from "@/actions/auth";
 import createServerClient from "@/utils/supabase/server";
 import { z } from "zod";
 // 사용자 정보 타입 정의 (필요에 따라 변경)
@@ -9,6 +10,10 @@ const zUser = z.nullable(
 );
 type UserType = z.infer<typeof zUser>;
 
+/* 싱글톤 패턴을 적용해 서버 단에서 사용자 정보를 공유하는 아이디어를 구현하려 했으나, 사용하지 않는 코드입니다.
+성보의 일관성, 보안 취약성, 세션 관리 복잡성 등의 문제가 발생할 수 있으며, 실제로 세션 관리 때문에 애를 먹은 경험이 있습니다.
+따라서 해당 방식은 폐기하고, supabase auth 공식 문서에 적혀 있는대로 사용자 정보를 getUser()로 가져오는 방식을 사용하는 것이 좋습니다.
+다만 기록을 위해 코드 자체는 남겨두기로 했습니다.*/
 class UserStore {
   private static instance: UserStore;
   private user: UserType | null = null; // 사용자 정보 저장

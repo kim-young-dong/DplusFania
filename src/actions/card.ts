@@ -2,7 +2,7 @@
 
 import createClient from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
-import userStore from "@/constant/auth";
+import { getUser } from "@/actions/auth";
 import { getRandomNumber } from "@/constant/math";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -67,7 +67,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
 export async function randomCardPickup(): Promise<CardProduct | null> {
   const supabase = createClient();
 
-  const user = await userStore.getUser();
+  const user = await getUser();
   // user 또는 user.id가 undefined인 경우 함수 종료
   if (!user || !user.id) {
     console.log("User not found or user ID is undefined");

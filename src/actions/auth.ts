@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import createClient from "@/utils/supabase/server";
-import userStore from "@/constant/auth";
 
 export async function signin(formData: { email: string; password: string }) {
   // type-casting here for convenience
@@ -22,7 +21,6 @@ export async function signin(formData: { email: string; password: string }) {
     email: data.user.email || "",
   };
 
-  userStore.setUser(user);
   return user;
 }
 
@@ -58,7 +56,6 @@ export async function signout() {
     return error;
   }
 
-  userStore.logout();
   redirect("/");
 }
 

@@ -41,7 +41,7 @@ export default function SignInPage() {
       const data = await res.json();
       setUser(data.user);
       // 로그인 성공 시 대시보드로 리디렉션
-      router.push("/dashboard");
+      router.push("/");
     } else {
       setIsError(true);
     }
