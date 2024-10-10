@@ -5,3 +5,10 @@
 .nav_list {
   @apply flex items-center justify-between px-4 py-2;
 }
+
+.back_button {
+  @apply h-12 w-12;
+  background-image: url("/images/icons/icons.png");
+  cursor: pointer;
+  background-position: -180px -116px;
+}

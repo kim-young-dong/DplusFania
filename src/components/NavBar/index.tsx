@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "./styles.module.css";
 import Button from "@/components/Button/index";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
 
@@ -35,7 +35,11 @@ export default function NavBar() {
   };
 
   if (pathname.includes("/auth")) {
-    return null;
+    return (
+      <nav className={styles.nav_wrapper}>
+        <div className={styles.back_button} onClick={router.back}></div>
+      </nav>
+    );
   } else {
     return (
       <nav className={styles.nav_wrapper}>
