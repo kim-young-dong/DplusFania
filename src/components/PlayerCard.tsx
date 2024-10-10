@@ -3,6 +3,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import { getRandomCard, randomCardPickup, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
+import { useUser } from "@/context/userContext";
 import styles from "./PlayerCard.module.css";
 
 // 사용자 정의 CSS 변수를 포함하는 인터페이스 정의
@@ -20,18 +21,16 @@ interface CustomCSSProperties extends React.CSSProperties {
 }
 
 const PlayerCard = ({
-  todaysCard,
-  isSignedIn,
+  initialCard,
 }: {
-  readonly todaysCard: CardProduct | null;
-  isSignedIn: boolean;
+  readonly initialCard: CardProduct | null;
 }) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
-    todaysCard || null,
+    initialCard || null,
   );
   const [isCardLoaded, setIsCardLoading] = useState(false);
   const [rotateDirectionY, setRotateDirectionY] = useState<360 | 0>(0); // Y축 회전 방향
@@ -41,6 +40,7 @@ const PlayerCard = ({
     rotateX: 0,
     rotateY: 0,
   }); // 카드 회전 각도
+  const { user } = useUser();
 
   // 카드를 원래 자리로 돌려놓는 이벤트
   useEffect(() => {
@@ -52,17 +52,12 @@ const PlayerCard = ({
     });
   }, [rotateDirectionY]);
 
-  // 카드 로드시 발생하는 이벤트
-  // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
+  // 유저가 로그아웃했을 때 카드를 초기화
   useEffect(() => {
-    if (isCardLoaded && !todaysCard) {
-      cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
-
-      const time = setTimeout(() => {
-        cardFrontRef.current?.classList.remove(styles["hidden"]);
-      }, 1000);
+    if (!user) {
+      setCardData(null);
     }
-  }, [isCardLoaded, todaysCard]);
+  }, [user]);
 
   // 광택 효과
   const glareStyle = useMemo(() => {
@@ -148,9 +143,7 @@ const PlayerCard = ({
   const cardPickup = async () => {
     // insert card to collection
     try {
-      const card = isSignedIn
-        ? await randomCardPickup()
-        : await getRandomCard();
+      const card = !!user ? await randomCardPickup() : await getRandomCard();
 
       cardFrontRef.current?.classList.add(styles["hidden"]);
       setCardData(card);
@@ -210,6 +203,17 @@ const PlayerCard = ({
                 height={475}
                 onLoad={() => {
                   setIsCardLoading(true);
+                  // 카드 로드시 발생하는 이벤트
+                  // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
+                  if (!initialCard) {
+                    cardTranslaterRef.current?.classList.add(
+                      styles["pickup_active"],
+                    );
+
+                    const time = setTimeout(() => {
+                      cardFrontRef.current?.classList.remove(styles["hidden"]);
+                    }, 1000);
+                  }
                 }}
               />
             </>

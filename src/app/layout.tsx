@@ -36,7 +36,7 @@ export default async function RootLayout({
         <UserProvider>
           <StyledComponentsRegistry>
             <NavBar />
-            <main className="mx-auto mt-16 block max-w-7xl content-center p-4 pb-12 lg:p-12">
+            <main className="mx-auto mt-16 block max-w-7xl content-center p-8 pb-12 lg:p-12">
               {children}
             </main>
           </StyledComponentsRegistry>

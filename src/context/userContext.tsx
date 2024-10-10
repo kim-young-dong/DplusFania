@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { getUser } from "@/actions/auth";
 import { set, z } from "zod";
 
 const zUser = z.nullable(
@@ -33,19 +33,9 @@ export const UserProvider: React.FC<{
 
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
+      const user = await getUser();
 
-      if (error) {
-        setUser(null);
-      }
-
-      if (data && data.user) {
-        setUser({
-          id: data.user.id,
-          email: data.user.email,
-        });
-      }
+      setUser(user);
     };
     fetchUser();
   }, []);

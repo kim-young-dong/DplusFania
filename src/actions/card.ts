@@ -3,7 +3,6 @@
 import createClient from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
 import { getUser } from "@/actions/auth";
-import { getRandomNumber } from "@/constant/math";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -24,12 +23,30 @@ export type CardProduct = z.infer<typeof zCard>;
 // Get
 export async function getRandomCard() {
   const supabase = createClient();
-  const { data, error } = await supabase.from("products").select("*");
+  // products 테이블에서 랜덤한 카드 데이터를 1개 가져옴
+
+  const { count } = await supabase
+    .from("products")
+    .select("*", { count: "exact", head: true });
+
+  if (!count) {
+    console.log("Error: No count");
+    return null;
+  }
+
+  // 랜덤 인덱스를 생성합니다.
+  const randomIndex = Math.floor(Math.random() * count);
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .range(randomIndex, randomIndex);
 
   if (error) {
+    console.log("Error: No data");
     console.log(error);
   }
-  const card = data ? data[getRandomNumber(data.length - 1)] : null;
+  const card = data ? data[0] : null;
   delete card?.id;
 
   return card;
