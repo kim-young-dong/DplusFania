@@ -6,7 +6,7 @@ export default async function Home() {
   const todaysCard: CardProduct | null = await getTodaysCard();
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="text-center">
       <Description />
       <PlayerCard initialCard={todaysCard} />
     </div>

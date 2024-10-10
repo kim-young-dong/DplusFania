@@ -37,33 +37,36 @@ export default function NavBar() {
   if (pathname.includes("/auth")) {
     return (
       <nav className={styles.nav_wrapper}>
-        <div className={styles.back_button} onClick={router.back}></div>
+        <button
+          className={styles.back_button}
+          onClick={router.back}
+          aria-label="뒤로가기"
+          role="button"
+        ></button>
       </nav>
     );
   } else {
     return (
       <nav className={styles.nav_wrapper}>
-        <ul className={styles.nav_list}>
-          <li>
-            <Link href={"/"}>
-              <div className="flex items-center gap-2 text-lg font-bold">
-                <Image
-                  src={"/images/logo/logo_black.png"}
-                  alt={"Dplus Fania Logo"}
-                  width={50}
-                  height={50}
-                  priority
-                />
-                Dplus Fania
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Button onClick={handleCliek}>
-              {isSignedIn ? "로그아웃" : "로그인"}
-            </Button>
-          </li>
-        </ul>
+        <div>
+          <Link href={"/"}>
+            <div className="flex items-center gap-2 text-lg font-bold">
+              <Image
+                src={"/images/logo/logo_black.png"}
+                alt={"Dplus Fania Logo"}
+                width={50}
+                height={50}
+                priority
+              />
+              Dplus Fania
+            </div>
+          </Link>
+        </div>
+        <div>
+          <Button onClick={handleCliek}>
+            {isSignedIn ? "로그아웃" : "로그인"}
+          </Button>
+        </div>
       </nav>
     );
   }

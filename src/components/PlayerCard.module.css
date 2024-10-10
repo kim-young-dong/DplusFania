@@ -66,6 +66,7 @@
 }
 
 .card_item {
+  position: relative;
   grid-area: 1/1;
   transition: transform 0.6s;
   transform-style: preserve-3d;

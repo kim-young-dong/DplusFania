@@ -1,14 +1,13 @@
 .nav_wrapper {
-  @apply fixed top-0 z-50 w-full border-b border-gray-200 bg-white;
-}
-
-.nav_list {
-  @apply flex items-center justify-between px-4 py-2;
+  @apply fixed top-0 z-50 box-border flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 py-1;
 }
 
 .back_button {
-  @apply h-12 w-12;
+  @apply h-12 w-12 focus:ring-2 focus:ring-blue-500;
   background-image: url("/images/icons/icons.png");
   cursor: pointer;
-  background-position: -180px -116px;
+  background-position-x: calc(64 * -3px + 12px);
+  background-position-y: calc(64 * -2px + 12px);
+
+  /* 64 * 3 64 * 2px */
 }

@@ -182,10 +182,10 @@ const PlayerCard = ({
         <div className={`${styles.card_item} ${styles.card_back}`}>
           <Image
             className={styles.card_back}
-            src={"/images/cards/card_back.png"}
+            src={"/images/card_back.png"}
             alt={"카드 뒷면"}
-            width={340}
-            height={475}
+            fill
+            sizes="max-width: 272px max-height: 380px"
           />
         </div>
         <div
@@ -199,13 +199,14 @@ const PlayerCard = ({
                 className={styles.card_front}
                 src={cardData?.imgURL}
                 alt={`선수명: ${cardData.player.player} 카드명: ${cardData.name}`}
-                width={340}
-                height={475}
+                sizes="max-width: 272px max-height: 380px"
+                fill
                 onLoad={() => {
                   setIsCardLoading(true);
                   // 카드 로드시 발생하는 이벤트
                   // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
                   if (!initialCard) {
+                    console.time("pickup");
                     cardTranslaterRef.current?.classList.add(
                       styles["pickup_active"],
                     );
@@ -213,6 +214,7 @@ const PlayerCard = ({
                     const time = setTimeout(() => {
                       cardFrontRef.current?.classList.remove(styles["hidden"]);
                     }, 1000);
+                    console.timeEnd("pickup");
                   }
                 }}
               />
