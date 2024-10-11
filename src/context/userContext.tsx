@@ -8,7 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import { getUser } from "@/actions/auth";
-import { set, z } from "zod";
+import { z } from "zod";
 
 const zUser = z.nullable(
   z.object({
@@ -16,7 +16,7 @@ const zUser = z.nullable(
     email: z.string().optional(),
   }),
 );
-type UserType = z.infer<typeof zUser>;
+export type User = z.infer<typeof zUser>;
 
 const zUserContext = z.object({
   user: zUser,
@@ -28,8 +28,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{
   children: ReactNode;
-}> = ({ children }) => {
-  const [user, setUser] = useState<UserType | null>(null);
+  initailUser?: User;
+}> = ({ children, initailUser }) => {
+  const [user, setUser] = useState<User | null>(initailUser ?? null);
 
   useEffect(() => {
     const fetchUser = async () => {

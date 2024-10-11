@@ -10,10 +10,10 @@ import { z } from "zod";
 const zCard = z.object({
   name: z.string(),
   player: z.object({
-    type: z.string(),
-    player: z.string(),
+    name: z.string(),
     position: z.string(),
   }),
+  type: z.string(),
   imgURL: z.string(),
   user_id: z.string(),
 });
@@ -43,8 +43,7 @@ export async function getRandomCard() {
     .range(randomIndex, randomIndex);
 
   if (error) {
-    console.log("Error: No data");
-    console.log(error);
+    console.log("Error: getRandomCard\n" + error);
   }
   const card = data ? data[0] : null;
   delete card?.id;
@@ -67,7 +66,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
     .lt("created_at", tomorrow);
 
   if (error) {
-    console.log(error);
+    console.log("Error: getTodaysCard\n" + error);
   }
 
   if (data && data.length > 0) {
@@ -99,7 +98,7 @@ export async function randomCardPickup(): Promise<CardProduct | null> {
     .insert({ ...insertData, user_id: user.id });
 
   if (error) {
-    console.log(error);
+    console.log("Error: cardPickup\n" + error);
     // 추가로 에러 처리 로직을 작성해야 함
     // redirect("/error");
     return null;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getUser } from "@/actions/auth";
 import { UserProvider } from "@/context/userContext";
 import StyledComponentsRegistry from "./lib/registry";
 import NavBar from "@/components/NavBar/index";
@@ -30,10 +31,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <UserProvider>
+        <UserProvider initailUser={user}>
           <StyledComponentsRegistry>
             <NavBar />
             <main className="mx-auto mt-16 block max-w-7xl content-center p-8 pb-12 lg:p-12">

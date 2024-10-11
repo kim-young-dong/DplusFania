@@ -30,7 +30,7 @@ const PlayerCard = ({
   const cardFrontRef = useRef<HTMLDivElement>(null);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
-    initialCard || null,
+    initialCard ?? null,
   );
   const [isCardLoaded, setIsCardLoading] = useState(false);
   const [rotateDirectionY, setRotateDirectionY] = useState<360 | 0>(0); // Y축 회전 방향
@@ -198,7 +198,7 @@ const PlayerCard = ({
               <Image
                 className={styles.card_front}
                 src={cardData?.imgURL}
-                alt={`선수명: ${cardData.player.player} 카드명: ${cardData.name}`}
+                alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
                 sizes="max-width: 272px max-height: 380px"
                 fill
                 onLoad={() => {
