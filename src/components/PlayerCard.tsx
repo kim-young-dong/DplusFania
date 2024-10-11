@@ -206,7 +206,7 @@ const PlayerCard = ({
                   // 카드 로드시 발생하는 이벤트
                   // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
                   if (!initialCard) {
-                    console.time("pickup");
+                    // console.time("pickup");
                     cardTranslaterRef.current?.classList.add(
                       styles["pickup_active"],
                     );
@@ -214,7 +214,7 @@ const PlayerCard = ({
                     const time = setTimeout(() => {
                       cardFrontRef.current?.classList.remove(styles["hidden"]);
                     }, 1000);
-                    console.timeEnd("pickup");
+                    // console.timeEnd("pickup");
                   }
                 }}
               />
