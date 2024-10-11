@@ -48,7 +48,7 @@ export default function NavBar() {
   } else {
     return (
       <nav className={styles.nav_wrapper}>
-        <div>
+        <div className="ml-4">
           <Link href={"/"}>
             <div className="flex items-center gap-2 text-lg font-bold">
               <Image
@@ -62,7 +62,7 @@ export default function NavBar() {
             </div>
           </Link>
         </div>
-        <div>
+        <div className="mr-4">
           <Button onClick={handleCliek}>
             {isSignedIn ? "로그아웃" : "로그인"}
           </Button>

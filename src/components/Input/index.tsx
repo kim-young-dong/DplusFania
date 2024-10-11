@@ -1,14 +1,14 @@
 "use client";
 import styles from "./styles.module.css";
 
-interface InputProps {
+type InputProps = {
   id: string;
   title: string;
   value: string | number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type: "text" | "password" | "email";
   className?: string;
-}
+};
 
 const Input = ({
   id,

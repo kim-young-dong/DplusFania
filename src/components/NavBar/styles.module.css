@@ -1,10 +1,10 @@
 .nav_wrapper {
-  @apply fixed top-0 z-50 box-border flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 py-1;
+  @apply fixed top-0 z-50 box-border flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white;
 }
 
 .back_button {
   @apply h-12 w-12 focus:ring-2 focus:ring-blue-500;
-  background-image: url("/images/icons/icons.png");
+  background-image: url("/images/icons/Icons.png");
   cursor: pointer;
   background-position-x: calc(64 * -3px + 12px);
   background-position-y: calc(64 * -2px + 12px);

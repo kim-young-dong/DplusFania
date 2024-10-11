@@ -2,7 +2,7 @@
 import cn from "classnames";
 import styles from "./styles.module.css";
 
-interface ButtonProps {
+type ButtonProps = {
   children: React.ReactNode;
   type?: "button" | "submit" | "reset";
   color?: string;
@@ -12,7 +12,7 @@ interface ButtonProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   className?: string;
   style?: Record<string, string>;
-}
+};
 
 const Button = ({
   children,

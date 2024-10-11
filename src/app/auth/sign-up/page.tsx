@@ -6,9 +6,9 @@ import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
 
-interface ChildComponentProps {
+type ChildComponentProps = {
   setSignupComplete: (newState: boolean) => void;
-}
+};
 
 const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
   const [isLoad, setIsLoad] = useState<boolean>(false);
