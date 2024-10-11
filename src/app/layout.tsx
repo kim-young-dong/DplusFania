@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getUser } from "@/actions/auth";
+import { UserProvider } from "@/context/userContext";
 import StyledComponentsRegistry from "./lib/registry";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/NavBar/index";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,40 +20,29 @@ export const metadata: Metadata = {
     "포토카드",
     "뽑기",
     "포카뽑기",
-    "쇼메이커",
-    "showmaker",
-    "킹겐",
-    "kingen",
-    "루시드",
-    "lucid",
-    "에이밍",
-    "aiming",
-    "켈린",
-    "kellin",
+    "포카",
   ],
   icons: {
     icon: "/favicon.png",
   },
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <StyledComponentsRegistry>
-          <NavBar />
-          <div className="mt-[50px] flex justify-center">
-            <main className="min-w-[340px] lg:p-12 p-4 pb-12 flex flex-col items-center gap-4 ">
+        <UserProvider initailUser={user}>
+          <StyledComponentsRegistry>
+            <NavBar />
+            <main className="mx-auto mt-16 block max-w-7xl content-center p-8 pb-12 lg:p-12">
               {children}
             </main>
-          </div>
-        </StyledComponentsRegistry>
-        {/* <Provider store={store}>
-        </Provider> */}
+          </StyledComponentsRegistry>
+        </UserProvider>
       </body>
     </html>
   );

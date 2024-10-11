@@ -1,12 +1,10 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import createClient from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
-import { getRandomNumber } from "@/constant/math";
-import userStore from "@/constant/auth";
-import { z } from "zod";
-
+import { getUser } from "@/actions/auth";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 // 사용자 정보 타입 정의 (필요에 따라 변경)
 const zCard = z.object({
@@ -15,6 +13,7 @@ const zCard = z.object({
     name: z.string(),
     position: z.string(),
   }),
+  type: z.string(),
   imgURL: z.string(),
   user_id: z.string(),
 });
@@ -24,12 +23,29 @@ export type CardProduct = z.infer<typeof zCard>;
 // Get
 export async function getRandomCard() {
   const supabase = createClient();
-  const { data, error } = await supabase.from("products").select("*");
+  // products 테이블에서 랜덤한 카드 데이터를 1개 가져옴
+
+  const { count } = await supabase
+    .from("products")
+    .select("*", { count: "exact", head: true });
+
+  if (!count) {
+    console.log("Error: No count");
+    return null;
+  }
+
+  // 랜덤 인덱스를 생성합니다.
+  const randomIndex = Math.floor(Math.random() * count);
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .range(randomIndex, randomIndex);
 
   if (error) {
-    console.log(error);
+    console.log("Error: getRandomCard\n" + error);
   }
-  const card = data ? data[getRandomNumber(data.length - 1)] : null;
+  const card = data ? data[0] : null;
   delete card?.id;
 
   return card;
@@ -50,7 +66,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
     .lt("created_at", tomorrow);
 
   if (error) {
-    console.log(error);
+    console.log("Error: getTodaysCard\n" + error);
   }
 
   if (data && data.length > 0) {
@@ -59,7 +75,6 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
       created_at: dateFormater(data[0].created_at),
     };
   } else {
-    console.log("data is empth");
     return null;
   }
 }
@@ -68,7 +83,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
 export async function randomCardPickup(): Promise<CardProduct | null> {
   const supabase = createClient();
 
-  const user = await userStore.getUser();
+  const user = await getUser();
   // user 또는 user.id가 undefined인 경우 함수 종료
   if (!user || !user.id) {
     console.log("User not found or user ID is undefined");
@@ -83,7 +98,7 @@ export async function randomCardPickup(): Promise<CardProduct | null> {
     .insert({ ...insertData, user_id: user.id });
 
   if (error) {
-    console.log(error);
+    console.log("Error: cardPickup\n" + error);
     // 추가로 에러 처리 로직을 작성해야 함
     // redirect("/error");
     return null;

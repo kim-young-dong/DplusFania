@@ -34,28 +34,39 @@
 
   display: grid;
   width: 80%;
-  max-width: 340px;
-  max-height: 475px;
+  max-width: 272px;
+  max-height: 380px;
 
   aspect-ratio: 340 / 475;
   border-radius: 18px;
 
   transform-style: preserve-3d;
   transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
-  transition: transform var(--transition-sec), opacity var(--transition-sec);
+  transition:
+    transform var(--transition-sec),
+    opacity var(--transition-sec);
 
-  box-shadow: 0 0 3px -1px transparent, 0 0 2px 1px transparent,
-    0 0 5px 0px transparent, 0px 10px 20px -5px black, 0 2px 15px -5px black,
+  box-shadow:
+    0 0 3px -1px transparent,
+    0 0 2px 1px transparent,
+    0 0 5px 0px transparent,
+    0px 10px 20px -5px black,
+    0 2px 15px -5px black,
     0 0 20px 0px transparent;
 
   &:hover {
-    box-shadow: 0 0 3px -1px white, 0 0 3px 1px var(--card-edge),
-      0 0 12px 2px var(--card-glow), 0px 10px 20px -5px white,
-      0 0 40px -30px var(--card-glow), 0 0 50px -20px var(--card-glow);
+    box-shadow:
+      0 0 3px -1px white,
+      0 0 3px 1px var(--card-edge),
+      0 0 12px 2px var(--card-glow),
+      0px 10px 20px -5px white,
+      0 0 40px -30px var(--card-glow),
+      0 0 50px -20px var(--card-glow);
   }
 }
 
 .card_item {
+  position: relative;
   grid-area: 1/1;
   transition: transform 0.6s;
   transform-style: preserve-3d;
@@ -69,7 +80,10 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 
-  opacity: var(--card-front-opacity);
+  opacity: 1;
+  &.hidden {
+    opacity: 0;
+  }
 }
 
 .card_back {

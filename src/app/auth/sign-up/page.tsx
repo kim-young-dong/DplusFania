@@ -1,22 +1,23 @@
 // pages/signup.tsx
 "use client";
-import { signup } from "@/actions/auth";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
-import styled from "styled-components";
+import Input from "@/components/Input/index";
+import Button from "@/components/Button/index";
 
-interface ChildComponentProps {
-  onIsCompleteChange: (newState: boolean) => void;
-}
+type ChildComponentProps = {
+  setSignupComplete: (newState: boolean) => void;
+};
 
-const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
+const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
   const [isLoad, setIsLoad] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordCheck, setPasswordCheck] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const validatePassword = (): boolean => {
     const hasLetter = /[a-zA-Z]/.test(password); // 비밀번호에 문자가 있는지 확인
@@ -44,7 +45,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
     }
   };
 
-  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoad(true);
 
@@ -52,36 +53,28 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
       setIsLoad(false);
       return false;
     } else {
-      try {
-        await signup({ email, password });
-      } catch (error) {
-        console.log(error);
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.status === 200) {
+        setSignupComplete(true);
+      } else {
         setError("회원가입에 실패했습니다.");
       }
-      // const response = await fetch("/api/signup", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email, password }),
-      // });
-
-      // const data = await response.json();
-
-      // if (response.ok) {
-      //   onIsCompleteChange(true);
-      // } else {
-      //   setError(data.message);
-      // }
     }
     setIsLoad(false);
   };
   return (
     <>
       {isLoad ? (
-        <>
+        <div className="mx-auto mt-12 w-max">
           <svg
-            className="animate-spin h-12 w-12 text-blue-400"
+            className="h-12 w-12 animate-spin text-blue-400"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -100,37 +93,36 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-        </>
+        </div>
       ) : (
         <form onSubmit={handleSignup} className="w-full">
           <Input
             id="email"
             title="이메일 주소"
-            onChange={(e) => {
+            handleChange={(e) => {
               setEmail(e.target.value);
             }}
             value={email}
             type="email"
-            errorMessage="text"
           />
           <Input
             id="password"
             title="비밀번호"
-            onChange={(e) => setPassword(e.target.value)}
+            handleChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
-            errorMessage="text"
           />
           <Input
             id="passwordCheck"
             title="비밀번호 확인"
-            onChange={(e) => setPasswordCheck(e.target.value)}
+            handleChange={(e) => setPasswordCheck(e.target.value)}
             value={passwordCheck}
             type="password"
-            errorMessage="text"
           />
           <div style={{ margin: "14px 0" }}>
-            <Button type="submit">회원가입</Button>
+            <Button type="submit" size="lg" fullWidth={true}>
+              회원가입
+            </Button>
           </div>
           <div
             style={{
@@ -148,16 +140,16 @@ const SignupForm: React.FC<ChildComponentProps> = ({ onIsCompleteChange }) => {
 };
 const SignupConfirm = () => {
   return (
-    <>
-      <div className="w-full flex flex-col items-center gap-12">
-        <h2 className="text-xl text-center">
-          회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
-        </h2>
-        <Link href={"/"} className="w-full">
-          <Button>확인</Button>
-        </Link>
-      </div>
-    </>
+    <div className="mt-24 flex w-full flex-col items-center gap-12">
+      <h2 className="text-center text-xl">
+        회원가입이 완료되었습니다. <br /> 이메일 인증을 진행해주세요.
+      </h2>
+      <Link href={"/"} className="w-full">
+        <Button size="lg" fullWidth={true}>
+          확인
+        </Button>
+      </Link>
+    </div>
   );
 };
 
@@ -165,24 +157,13 @@ export default function Signup() {
   const [signupComplete, setSignupComplete] = useState<boolean>(false);
 
   return (
-    <>
-      <SignHeader>회원가입</SignHeader>
+    <div className="mx-auto max-w-[520px]">
+      <div className="flex items-center justify-around">회원가입</div>
       {signupComplete ? (
         <SignupConfirm />
       ) : (
-        <SignupForm onIsCompleteChange={setSignupComplete} />
+        <SignupForm setSignupComplete={setSignupComplete} />
       )}
-    </>
+    </div>
   );
 }
-const SignHeader = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  width: 100%;
-  height: 84px;
-  border-radius: 0 0 16px 16px;
-
-  box-sizing: border-box;
-`;

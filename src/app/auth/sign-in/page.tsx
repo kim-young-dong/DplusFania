@@ -1,96 +1,85 @@
 "use client";
-import { signin } from "@/actions/auth";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/userContext";
 import Link from "next/link";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
-import styled from "styled-components";
+import Input from "@/components/Input/index";
+import Button from "@/components/Button/index";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [signinData, setSigninData] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
   const [isError, setIsError] = useState<boolean>(false);
+
   const router = useRouter();
+  const { setUser } = useUser();
 
-  const handleSignin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsError(false);
 
-    try {
-      await signin({ email, password });
-    } catch (error) {
+    const res = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(signinData),
+    });
+
+    if (res.status === 200) {
+      const data = await res.json();
+      setUser(data.user);
+      // 로그인 성공 시 대시보드로 리디렉션
+      router.push("/");
+    } else {
       setIsError(true);
     }
   };
-
-  const errorMessage = () => {
-    if (isError) {
-      return (
-        <div className="text-red-500 text-sm text-center">
-          아이디 또는 비밀번호가 잘못 되었습니다.
-          <br /> 아이디와 비밀번호를 정확히 입력해 주세요.
-        </div>
-      );
-    }
-  };
   return (
-    <>
-      <SignHeader>로그인</SignHeader>
-      <form onSubmit={handleSignin} className="w-full">
+    <div className="mx-auto max-w-[520px]">
+      <div className="flex items-center justify-around">로그인</div>
+      <form onSubmit={handleSubmit} className="w-full">
         <Input
           id="email"
           title="이메일 주소"
-          onChange={(e) => {
-            setEmail(e.target.value);
+          handleChange={(e) => {
+            setSigninData({ ...signinData, email: e.target.value });
           }}
-          value={email}
+          value={signinData.email}
           type="email"
-          errorMessage="text"
         />
         <Input
           id="password"
           title="비밀번호"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
+          handleChange={(e) =>
+            setSigninData({ ...signinData, password: e.target.value })
+          }
+          value={signinData.password}
           type="password"
-          errorMessage="text"
         />
-        {errorMessage()}
-        <div style={{ margin: "14px 0" }}>
-          <Button type="submit">로그인</Button>
+        {isError && (
+          <div className="text-left text-sm text-red-500">
+            Invalid email or password
+          </div>
+        )}
+        <div className="my-4">
+          <Button type="submit" size="lg" fullWidth={true}>
+            로그인
+          </Button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#373737",
-            fontSize: "10px",
-            lineHeight: "14px",
-            gap: "4px",
-          }}
-        >
-          <span style={{ color: "#373737" }}>회원이 아니신가요?</span>
+        <div className="text-center">
+          <span className="mr-2" style={{ color: "#373737" }}>
+            회원이 아니신가요?
+          </span>
           <Link href={"/auth/sign-up"}>
-            <span style={{ color: "#1E90FF", textDecoration: "underline" }}>
-              회원가입
-            </span>
+            <span className="font-semibold underline">회원가입</span>
           </Link>
         </div>
       </form>
-    </>
+    </div>
   );
 }
-
-const SignHeader = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  width: 100%;
-  height: 84px;
-  border-radius: 0 0 16px 16px;
-
-  box-sizing: border-box;
-`;
