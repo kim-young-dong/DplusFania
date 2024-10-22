@@ -10,9 +10,11 @@ export default function SignInPage() {
   const [signinData, setSigninData] = useState<{
     email: string;
     password: string;
+    isKeep: boolean;
   }>({
     email: "",
     password: "",
+    isKeep: false,
   });
   const [isError, setIsError] = useState<boolean>(false);
 
@@ -66,11 +68,28 @@ export default function SignInPage() {
             Invalid email or password
           </div>
         )}
+        <div className="me-4 flex items-center">
+          <input
+            id="red-checkbox"
+            type="checkbox"
+            className="h-4 w-4"
+            onChange={(e) =>
+              setSigninData({ ...signinData, isKeep: e.target.checked })
+            }
+          />
+          <label
+            htmlFor="red-checkbox"
+            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            로그인 상태 유지
+          </label>
+        </div>
         <div className="my-4">
           <Button type="submit" size="lg" fullWidth={true}>
             로그인
           </Button>
         </div>
+
         <div className="text-center">
           <span className="mr-2" style={{ color: "#373737" }}>
             회원이 아니신가요?

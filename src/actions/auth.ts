@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import createClient from "@/utils/supabase/server";
 
 export async function signin(formData: { email: string; password: string }) {
@@ -61,8 +62,14 @@ export async function signout() {
 
 export async function getUser() {
   const supabase = createClient();
+  const sbAccessToken = cookies().get("sb_access_token")?.value;
+  // const sbRefreshToken = cookies().get("sb_refresh_token")?.value;
 
-  const { data, error } = await supabase.auth.getUser();
+  if (!sbAccessToken) {
+    return null;
+  }
+
+  const { data, error } = await supabase.auth.getUser(sbAccessToken);
 
   if (error) {
     return null;
