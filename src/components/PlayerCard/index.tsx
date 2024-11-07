@@ -31,8 +31,6 @@ export default function PlayerCard({
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
 
-  const [loadedImages, setLoadedImages] = useState(0);
-
   const [cardData, setCardData] = useState<CardProduct | null>(
     initialCard ?? null,
   );
