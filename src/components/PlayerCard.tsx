@@ -145,9 +145,7 @@ const PlayerCard = ({
   const cardPickup = async () => {
     // insert card to collection
     try {
-      const card = !!user
-        ? await randomCardPickup(rendomCard)
-        : await getRandomCard();
+      const card = !!user ? await randomCardPickup(rendomCard) : rendomCard;
 
       cardFrontRef.current?.classList.add(styles["hidden"]);
       setCardData(card);
