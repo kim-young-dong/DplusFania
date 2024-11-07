@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
+import { randomCardPickup, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
 import styles from "./styles.module.css";
