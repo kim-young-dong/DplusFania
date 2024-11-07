@@ -1,12 +1,7 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import NextImage from "next/image";
-import {
-  randomCardPickup,
-  getRandomCard,
-  CardProduct,
-  getTodaysCard,
-} from "@/actions/card";
+import { randomCardPickup, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
 import styles from "./styles.module.css";
@@ -35,6 +30,8 @@ export default function PlayerCard({
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
+
+  const [loadedImages, setLoadedImages] = useState(0);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
     initialCard ?? null,
