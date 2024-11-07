@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const ImagePreloader = ({ images }) => {
+const ImagePreloader = ({ images }: { images: string[] }) => {
   const [loadedImages, setLoadedImages] = useState(0);
 
   useEffect(() => {
