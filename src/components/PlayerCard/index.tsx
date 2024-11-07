@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import NextImage from "next/image";
-import { randomCardPickup, CardProduct } from "@/actions/card";
+import Image from "next/image";
+import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
 import styles from "./styles.module.css";
@@ -30,8 +30,6 @@ export default function PlayerCard({
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
-
-  const [loadedImages, setLoadedImages] = useState(0);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
     initialCard ?? null,
@@ -207,7 +205,7 @@ export default function PlayerCard({
         }}
       >
         <div className={`${styles.card_item} ${styles.card_back}`}>
-          <NextImage
+          <Image
             className={styles.card_back}
             src={"/images/card_back.png"}
             alt={"카드 뒷면"}
@@ -222,7 +220,7 @@ export default function PlayerCard({
           {cardData && (
             <>
               <div className={styles["card_glare"]}></div>
-              <NextImage
+              <Image
                 className={styles.card_front}
                 src={cardData?.imgURL}
                 alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
