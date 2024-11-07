@@ -1,5 +1,4 @@
 "use server";
-
 import createClient from "@/utils/supabase/server";
 import dateFormater from "@/utils/dateFormater";
 import { getUser } from "@/actions/auth";
@@ -51,6 +50,18 @@ export async function getRandomCard() {
   return card;
 }
 
+export async function getAllCards(): Promise<CardProduct[] | null> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.from("products").select("*");
+
+  if (error) {
+    console.log("Error: getAllCards\n" + error);
+  }
+
+  return data;
+}
+
 export async function getTodaysCard(): Promise<CardProduct | null> {
   const supabase = createClient();
 
@@ -80,7 +91,9 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
 }
 
 // Post
-export async function randomCardPickup(): Promise<CardProduct | null> {
+export async function randomCardPickup(
+  insertData: CardProduct,
+): Promise<CardProduct | null> {
   const supabase = createClient();
 
   const user = await getUser();
@@ -91,7 +104,6 @@ export async function randomCardPickup(): Promise<CardProduct | null> {
     redirect("/");
     return null;
   }
-  const insertData: CardProduct = await getRandomCard();
 
   const { data, error } = await supabase
     .from("collection")

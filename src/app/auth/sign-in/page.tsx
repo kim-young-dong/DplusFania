@@ -71,6 +71,7 @@ export default function SignInPage() {
             로그인
           </Button>
         </div>
+
         <div className="text-center">
           <span className="mr-2" style={{ color: "#373737" }}>
             회원이 아니신가요?

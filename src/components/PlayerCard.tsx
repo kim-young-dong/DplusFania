@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
-import { getRandomCard, randomCardPickup, CardProduct } from "@/actions/card";
+import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
 import styles from "./PlayerCard.module.css";
@@ -22,8 +22,10 @@ interface CustomCSSProperties extends React.CSSProperties {
 
 const PlayerCard = ({
   initialCard,
+  rendomCard,
 }: {
   readonly initialCard: CardProduct | null;
+  readonly rendomCard: CardProduct;
 }) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
@@ -143,7 +145,9 @@ const PlayerCard = ({
   const cardPickup = async () => {
     // insert card to collection
     try {
-      const card = !!user ? await randomCardPickup() : await getRandomCard();
+      const card = !!user
+        ? await randomCardPickup(rendomCard)
+        : await getRandomCard();
 
       cardFrontRef.current?.classList.add(styles["hidden"]);
       setCardData(card);
@@ -214,7 +218,6 @@ const PlayerCard = ({
                     const time = setTimeout(() => {
                       cardFrontRef.current?.classList.remove(styles["hidden"]);
                     }, 1000);
-                    // console.timeEnd("pickup");
                   }
                 }}
               />
