@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import Image from "next/image";
+import NextImage from "next/image";
 import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
@@ -23,13 +23,17 @@ interface CustomCSSProperties extends React.CSSProperties {
 const PlayerCard = ({
   initialCard,
   rendomCard,
+  images,
 }: {
   readonly initialCard: CardProduct | null;
   readonly rendomCard: CardProduct;
+  readonly images: string[];
 }) => {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
+
+  const [loadedImages, setLoadedImages] = useState(0);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
     initialCard ?? null,
@@ -43,6 +47,35 @@ const PlayerCard = ({
     rotateY: 0,
   }); // 카드 회전 각도
   const { user } = useUser();
+
+  useEffect(() => {
+    const preloadImages = async () => {
+      const imagePromises = images.map((imageUrl) => {
+        return new Promise((resolve, reject) => {
+          const img: HTMLImageElement = new Image();
+
+          img.onload = () => {
+            setLoadedImages((prev) => prev + 1);
+            resolve(img);
+          };
+
+          img.onerror = reject;
+          img.src = imageUrl;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        console.log("모든 이미지가 프리로드되었습니다.");
+      } catch (error) {
+        console.error("이미지 프리로드 중 오류 발생:", error);
+      }
+    };
+
+    if (images?.length > 0) {
+      preloadImages();
+    }
+  }, [images]);
 
   // 카드를 원래 자리로 돌려놓는 이벤트
   useEffect(() => {
@@ -182,7 +215,7 @@ const PlayerCard = ({
         }}
       >
         <div className={`${styles.card_item} ${styles.card_back}`}>
-          <Image
+          <NextImage
             className={styles.card_back}
             src={"/images/card_back.png"}
             alt={"카드 뒷면"}
@@ -197,7 +230,7 @@ const PlayerCard = ({
           {cardData && (
             <>
               <div className={styles["card_glare"]}></div>
-              <Image
+              <NextImage
                 className={styles.card_front}
                 src={cardData?.imgURL}
                 alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}

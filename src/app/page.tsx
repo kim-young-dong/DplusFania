@@ -1,6 +1,5 @@
 import PlayerCard from "@/components/PlayerCard";
 import Description from "@/components/Discription";
-import ImagePreloader from "@/constant/images";
 
 import {
   getTodaysCard,
@@ -18,13 +17,16 @@ async function getImages() {
 export default async function Home() {
   const todaysCard: CardProduct | null = await getTodaysCard();
   const insertData: CardProduct = await getRandomCard();
-  const imageUrls = await getImages();
+  const imageUrls = (await getImages()) || [];
 
   return (
     <div className="text-center">
-      <ImagePreloader images={imageUrls} />
       <Description />
-      <PlayerCard initialCard={todaysCard} rendomCard={insertData} />
+      <PlayerCard
+        initialCard={todaysCard}
+        rendomCard={insertData}
+        images={imageUrls}
+      />
     </div>
   );
 }
