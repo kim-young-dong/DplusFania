@@ -20,14 +20,11 @@ export default function SignInPage() {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm();
 
   const onSubmit = async (formData: any) => {
     try {
       const response = await axios.post("/api/auth/signin", formData);
-      console.log(response);
-
       setUser(response.data.user);
       // 로그인 성공 시 대시보드로 리디렉션
       router.push("/");

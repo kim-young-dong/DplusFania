@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./styles.module.css";
 import Button from "@/components/Button/index";
-
+import useAxiosInstance from "@hooks/useAxiosInstance";
 import { useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/userContext";
@@ -11,22 +11,17 @@ import { useUser } from "@/context/userContext";
 export default function NavBar() {
   const { user, setUser } = useUser();
   const isSignedIn = useMemo(() => !!user, [user]);
+  const axios = useAxiosInstance();
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleCliek = async () => {
+  const handleClick = async () => {
     if (isSignedIn) {
-      const res = await fetch("/api/auth/signout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (res.status === 200) {
+      try {
+        await axios.post("/api/auth/signout");
         setUser(null);
         router.push("/");
-      } else {
+      } catch (error) {
         console.log("로그아웃 실패");
       }
     } else {
@@ -63,7 +58,7 @@ export default function NavBar() {
           </Link>
         </div>
         <div className="mr-4">
-          <Button onClick={handleCliek}>
+          <Button onClick={handleClick}>
             {isSignedIn ? "로그아웃" : "로그인"}
           </Button>
         </div>

@@ -37,7 +37,6 @@ const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
 
       setUser(response.data.user);
       setIsLoad(false);
-      // 로그인 성공 시 대시보드로 리디렉션
       setSignupComplete(true);
     } catch (error) {
       console.error(error);
