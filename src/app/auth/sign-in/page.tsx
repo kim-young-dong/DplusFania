@@ -58,7 +58,6 @@ export default function SignInPage() {
               })}
             />
             <InputError target={errors.email} />
-
             <Input
               label="비밀번호"
               name="password"
