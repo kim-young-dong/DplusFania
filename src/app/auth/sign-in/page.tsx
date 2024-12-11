@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
-import InputError from "@components/InputError";
+import InputError from "@/components/Input/InputError";
 import useAxiosInstance from "@hooks/useAxiosInstance";
 
 export default function SignInPage() {
@@ -27,7 +27,7 @@ export default function SignInPage() {
       const response = await axios.post("/api/auth/signin", formData);
       setUser(response.data.user);
       // 로그인 성공 시 대시보드로 리디렉션
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
       setIsError(true);
@@ -45,12 +45,6 @@ export default function SignInPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* <label
-              className="mb-2 block text-gray-700 dark:text-gray-200"
-              htmlFor="email"
-            >
-              이메일
-            </label> */}
             <Input
               label="이메일"
               name="email"
@@ -64,12 +58,7 @@ export default function SignInPage() {
               })}
             />
             <InputError target={errors.email} />
-            {/* <label
-              className="mb-2 block text-gray-700 dark:text-gray-200"
-              htmlFor="password"
-            >
-              비밀번호
-            </label> */}
+
             <Input
               label="비밀번호"
               name="password"

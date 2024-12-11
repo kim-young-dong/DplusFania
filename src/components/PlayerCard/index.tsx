@@ -1,10 +1,15 @@
 "use client";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import NextImage from "next/image";
-import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
+import {
+  randomCardPickup,
+  getRandomCard,
+  CardProduct,
+  getTodaysCard,
+} from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
-import styles from "./PlayerCard.module.css";
+import styles from "./styles.module.css";
 
 // 사용자 정의 CSS 변수를 포함하는 인터페이스 정의
 interface CustomCSSProperties extends React.CSSProperties {
@@ -20,20 +25,16 @@ interface CustomCSSProperties extends React.CSSProperties {
   "--front-opacity"?: number;
 }
 
-const PlayerCard = ({
+export default function PlayerCard({
   initialCard,
   rendomCard,
-  images,
 }: {
   readonly initialCard: CardProduct | null;
   readonly rendomCard: CardProduct;
-  readonly images: string[];
-}) => {
+}) {
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
-
-  const [loadedImages, setLoadedImages] = useState(0);
 
   const [cardData, setCardData] = useState<CardProduct | null>(
     initialCard ?? null,
@@ -46,36 +47,30 @@ const PlayerCard = ({
     rotateX: 0,
     rotateY: 0,
   }); // 카드 회전 각도
+
   const { user } = useUser();
 
   useEffect(() => {
-    const preloadImages = async () => {
-      const imagePromises = images.map((imageUrl) => {
-        return new Promise((resolve, reject) => {
-          const img: HTMLImageElement = new Image();
-
-          img.onload = () => {
-            setLoadedImages((prev) => prev + 1);
-            resolve(img);
-          };
-
-          img.onerror = reject;
-          img.src = imageUrl;
-        });
-      });
-
-      try {
-        await Promise.all(imagePromises);
-        console.log("모든 이미지가 프리로드되었습니다.");
-      } catch (error) {
-        console.error("이미지 프리로드 중 오류 발생:", error);
-      }
-    };
-
-    if (images?.length > 0) {
-      preloadImages();
+    if (initialCard) {
+      setCardData(initialCard);
     }
-  }, [images]);
+  }, [initialCard]);
+
+  useEffect(() => {
+    if (!!cardData && isCardLoaded) {
+      // 카드 로드시 발생하는 이벤트
+      // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
+      if (!initialCard) {
+        console.log("pickup");
+        cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
+
+        const time = setTimeout(() => {
+          cardFrontRef.current?.classList.remove(styles["hidden"]);
+        }, 1000);
+      }
+      console.log("has initialCard", initialCard);
+    }
+  }, [cardData, isCardLoaded]);
 
   // 카드를 원래 자리로 돌려놓는 이벤트
   useEffect(() => {
@@ -180,8 +175,8 @@ const PlayerCard = ({
     try {
       const card = !!user ? await randomCardPickup(rendomCard) : rendomCard;
 
-      cardFrontRef.current?.classList.add(styles["hidden"]);
       setCardData(card);
+      cardFrontRef.current?.classList.add(styles["hidden"]);
     } catch (error) {
       console.error(error);
     }
@@ -240,16 +235,15 @@ const PlayerCard = ({
                   setIsCardLoading(true);
                   // 카드 로드시 발생하는 이벤트
                   // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
-                  if (!initialCard) {
-                    // console.time("pickup");
-                    cardTranslaterRef.current?.classList.add(
-                      styles["pickup_active"],
-                    );
-
-                    const time = setTimeout(() => {
-                      cardFrontRef.current?.classList.remove(styles["hidden"]);
-                    }, 1000);
-                  }
+                  // if (!initialCard) {
+                  //   // console.time("pickup");
+                  //   cardTranslaterRef.current?.classList.add(
+                  //     styles["pickup_active"],
+                  //   );
+                  //   const time = setTimeout(() => {
+                  //     cardFrontRef.current?.classList.remove(styles["hidden"]);
+                  //   }, 1000);
+                  // }
                 }}
               />
             </>
@@ -258,6 +252,4 @@ const PlayerCard = ({
       </div>
     </div>
   );
-};
-
-export default PlayerCard;
+}

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
-import InputError from "@components/InputError";
+import InputError from "@/components/Input/InputError";
 import useAxiosInstance from "@hooks/useAxiosInstance";
 
 type ChildComponentProps = {
