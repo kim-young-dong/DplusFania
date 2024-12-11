@@ -49,11 +49,12 @@ export async function updateSession(request: NextRequest) {
     }
   } else {
     switch (true) {
+      case request.nextUrl.pathname == "/":
       case request.nextUrl.pathname == "/auth/sign-in":
       case request.nextUrl.pathname == "/auth/sign-up":
       case request.nextUrl.pathname == "/auth/find-id":
       case request.nextUrl.pathname == "/auth/find-password":
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 

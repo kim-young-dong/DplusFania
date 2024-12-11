@@ -27,7 +27,7 @@ export default function SignInPage() {
       const response = await axios.post("/api/auth/signin", formData);
       setUser(response.data.user);
       // 로그인 성공 시 대시보드로 리디렉션
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
       setIsError(true);
