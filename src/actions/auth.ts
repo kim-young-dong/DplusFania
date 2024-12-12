@@ -43,9 +43,6 @@ export async function signup(formData: { email: string; password: string }) {
 }
 
 export async function signout() {
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
