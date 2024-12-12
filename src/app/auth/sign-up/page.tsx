@@ -2,9 +2,13 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/userContext";
+import { useForm } from "react-hook-form";
 import Link from "next/link";
 import Input from "@/components/Input/index";
 import Button from "@/components/Button/index";
+import InputError from "@/components/Input/InputError";
+import useAxiosInstance from "@hooks/useAxiosInstance";
 
 type ChildComponentProps = {
   setSignupComplete: (newState: boolean) => void;
@@ -12,63 +16,35 @@ type ChildComponentProps = {
 
 const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
   const [isLoad, setIsLoad] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [passwordCheck, setPasswordCheck] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [errorText, setErrorText] = useState<string>("");
 
   const router = useRouter();
+  const axios = useAxiosInstance();
+  const { setUser } = useUser();
 
-  const validatePassword = (): boolean => {
-    const hasLetter = /[a-zA-Z]/.test(password); // 비밀번호에 문자가 있는지 확인
-    const hasNumber = /\d/.test(password); // 비밀번호에 숫자가 있는지 확인
-    const validLength = password.length >= 8; // 비밀번호가 8자 이상인지 확인
-    const passwordMatch = password === passwordCheck; // 비밀번호와 비밀번호 확인이 일치하는지 확인
-    switch (false) {
-      case !!password:
-        setError("비밀번호를 입력해주세요.");
-        return false;
-      case validLength:
-        setError("비밀번호를 8자 이상 입력해주세요.");
-        return false;
-      case passwordMatch:
-        setError("비밀번호가 일치하지 않습니다.");
-        return false;
-      case hasLetter:
-        setError("비밀번호에 문자를 포함해주세요.");
-        return false;
-      case hasNumber:
-        setError("비밀번호에 숫자를 포함해주세요.");
-        return false;
-      default:
-        return true;
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoad(true);
+  const onSubmit = async (formData: any) => {
+    try {
+      setIsLoad(true);
+      const response = await axios.post("/api/auth/signup", formData);
+      console.log(response);
 
-    if (!validatePassword()) {
+      setUser(response.data.user);
       setIsLoad(false);
-      return false;
-    } else {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (res.status === 200) {
-        setSignupComplete(true);
-      } else {
-        setError("회원가입에 실패했습니다.");
-      }
+      setSignupComplete(true);
+    } catch (error) {
+      console.error(error);
+      setErrorText("회원 가입에 실패했습니다.");
+      setIsLoad(false);
     }
-    setIsLoad(false);
   };
+
   return (
     <>
       {isLoad ? (
@@ -95,35 +71,57 @@ const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
           </svg>
         </div>
       ) : (
-        <form onSubmit={handleSignup} className="w-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
           <Input
-            id="email"
-            title="이메일 주소"
-            handleChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            value={email}
+            label="이메일"
+            name="email"
             type="email"
+            register={register("email", {
+              required: "이메일은 필수입니다.",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "이메일 형식이 아닙니다.",
+              },
+            })}
           />
+          <InputError target={errors.email} />
+
           <Input
-            id="password"
-            title="비밀번호"
-            handleChange={(e) => setPassword(e.target.value)}
-            value={password}
+            label="비밀번호"
+            name="password"
             type="password"
+            register={register("password", {
+              required: "비밀번호는 필수입니다.",
+              minLength: {
+                value: 8,
+                message: "비밀번호는 8자 이상이어야 합니다.",
+              },
+            })}
           />
+          <InputError target={errors.password} />
+
           <Input
-            id="passwordCheck"
-            title="비밀번호 확인"
-            handleChange={(e) => setPasswordCheck(e.target.value)}
-            value={passwordCheck}
+            label="비밀번호 확인"
+            name="passwordCheck"
             type="password"
+            register={register("passwordCheck", {
+              required: "비밀번호 확인은 필수입니다.",
+              minLength: {
+                value: 8,
+                message: "비밀번호는 8자 이상이어야 합니다.",
+              },
+              validate: (value) =>
+                value === watch("password") || "비밀번호와 일치하지 않습니다.",
+            })}
           />
-          <div style={{ margin: "14px 0" }}>
+          <InputError target={errors.passwordCheck} />
+
+          <div className="my-4">
             <Button type="submit" size="lg" fullWidth={true}>
               회원가입
             </Button>
           </div>
+
           <div
             style={{
               color: "red",
@@ -131,7 +129,7 @@ const SignupForm: React.FC<ChildComponentProps> = ({ setSignupComplete }) => {
               textAlign: "center",
             }}
           >
-            {error}
+            {errorText}
           </div>
         </form>
       )}

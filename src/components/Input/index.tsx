@@ -2,30 +2,33 @@
 import styles from "./styles.module.css";
 
 type InputProps = {
-  id: string;
-  title: string;
-  value: string | number;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label?: string;
+  name: string;
   type: "text" | "password" | "email";
+  register: any;
   className?: string;
 };
 
-const Input = ({
-  id,
-  title,
-  value,
-  handleChange,
-  type,
-  className,
-}: InputProps) => {
+const Input = (
+  { label, name, type = "text", register, className }: InputProps,
+  ref: InputProps,
+) => {
   return (
     <div className="py-3">
-      {!!title && <label htmlFor={id}>{title}</label>}
+      {!!label && (
+        <label
+          htmlFor={name}
+          className="mb-2 block text-gray-700 dark:text-gray-200"
+        >
+          {label}
+        </label>
+      )}
       <input
-        id={id}
+        id={name}
+        name={name}
         type={type}
-        value={value}
-        onChange={handleChange}
+        ref={ref}
+        {...register}
         className={`${styles.input} ${className}`}
       />
     </div>

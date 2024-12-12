@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { getUser } from "@/actions/auth";
 import { UserProvider } from "@/context/userContext";
-import StyledComponentsRegistry from "./lib/registry";
+// import StyledComponentsRegistry from "./lib/registry";
 import NavBar from "@/components/NavBar/index";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -36,12 +36,12 @@ export default async function RootLayout({
     <html lang="ko">
       <body className={inter.className}>
         <UserProvider initailUser={user}>
-          <StyledComponentsRegistry>
-            <NavBar />
-            <main className="mx-auto mt-16 block max-w-7xl content-center p-8 pb-12 lg:p-12">
-              {children}
-            </main>
-          </StyledComponentsRegistry>
+          {/* <StyledComponentsRegistry> */}
+          <NavBar />
+          <main className="mx-auto mt-16 block max-w-7xl content-center p-8 pb-12 lg:p-12">
+            {children}
+          </main>
+          {/* </StyledComponentsRegistry> */}
         </UserProvider>
       </body>
     </html>

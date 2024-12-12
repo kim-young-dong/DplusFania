@@ -21,7 +21,7 @@ export type CardProduct = z.infer<typeof zCard>;
 
 // Get
 export async function getRandomCard() {
-  const supabase = createClient();
+  const supabase = await createClient();
   // products 테이블에서 랜덤한 카드 데이터를 1개 가져옴
 
   const { count } = await supabase
@@ -51,7 +51,7 @@ export async function getRandomCard() {
 }
 
 export async function getAllCards(): Promise<CardProduct[] | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.from("products").select("*");
 
@@ -63,7 +63,7 @@ export async function getAllCards(): Promise<CardProduct[] | null> {
 }
 
 export async function getTodaysCard(): Promise<CardProduct | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const today = new Date().toISOString().split("T")[0];
   const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))
@@ -94,7 +94,7 @@ export async function getTodaysCard(): Promise<CardProduct | null> {
 export async function randomCardPickup(
   insertData: CardProduct,
 ): Promise<CardProduct | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const user = await getUser();
   // user 또는 user.id가 undefined인 경우 함수 종료

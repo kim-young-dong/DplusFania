@@ -18,15 +18,19 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@constant/*": ["./src/constant/*"],
+      "@hooks/*": ["./src/hooks/*"]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/constant/images.jsx"
+    "src/constant/images.tsx"
   ],
   "exclude": ["node_modules"]
 }

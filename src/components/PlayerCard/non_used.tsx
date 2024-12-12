@@ -1,10 +1,18 @@
 "use client";
+// initialCard를 props로 받지 않고 useEffect와 useState를 사용하여 컴포넌트 내에서 fetch
+
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import Image from "next/image";
-import { randomCardPickup, getRandomCard, CardProduct } from "@/actions/card";
+import NextImage from "next/image";
+import {
+  randomCardPickup,
+  getRandomCard,
+  CardProduct,
+  getTodaysCard,
+} from "@/actions/card";
 import { round, clamp } from "@/constant/math";
 import { useUser } from "@/context/userContext";
 import styles from "./PlayerCard.module.css";
+import { set } from "zod";
 
 // 사용자 정의 CSS 변수를 포함하는 인터페이스 정의
 interface CustomCSSProperties extends React.CSSProperties {
@@ -20,13 +28,40 @@ interface CustomCSSProperties extends React.CSSProperties {
   "--front-opacity"?: number;
 }
 
-const PlayerCard = ({
-  initialCard,
-  rendomCard,
-}: {
-  readonly initialCard: CardProduct | null;
-  readonly rendomCard: CardProduct;
-}) => {
+export default function PlayerCard() {
+  const [rendomCard, setRendomCard] = useState<CardProduct>({
+    name: "name",
+    player: {
+      name: "player",
+      position: "position",
+    },
+    type: "type",
+    imgURL: "/images/card_back.png",
+    user_id: "user_id",
+  });
+  const [initialCard, setInitialCard] = useState<
+    CardProduct | null | undefined
+  >(undefined);
+
+  useEffect(() => {
+    console.log("fetchRandomCard");
+    const fetchRandomCard = async () => {
+      const initialCard = (await getTodaysCard()) ?? null;
+      const randomCard = await getRandomCard();
+      setInitialCard(initialCard);
+      setRendomCard(randomCard);
+    };
+
+    fetchRandomCard();
+  }, []);
+
+  useEffect(() => {
+    console.log("initialCard", initialCard);
+    if (initialCard) {
+      setCardData(initialCard);
+    }
+  }, [initialCard]);
+
   const cardTranslaterRef = useRef<HTMLDivElement>(null);
   const doingPopOver = useRef(false);
   const cardFrontRef = useRef<HTMLDivElement>(null);
@@ -42,7 +77,24 @@ const PlayerCard = ({
     rotateX: 0,
     rotateY: 0,
   }); // 카드 회전 각도
+
   const { user } = useUser();
+
+  useEffect(() => {
+    if (!!cardData && isCardLoaded) {
+      // 카드 로드시 발생하는 이벤트
+      // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
+      if (!initialCard) {
+        console.log("pickup");
+        cardTranslaterRef.current?.classList.add(styles["pickup_active"]);
+
+        const time = setTimeout(() => {
+          cardFrontRef.current?.classList.remove(styles["hidden"]);
+        }, 1000);
+      }
+      console.log("has initialCard", initialCard);
+    }
+  }, [cardData, isCardLoaded]);
 
   // 카드를 원래 자리로 돌려놓는 이벤트
   useEffect(() => {
@@ -58,6 +110,7 @@ const PlayerCard = ({
   useEffect(() => {
     if (!user) {
       setCardData(null);
+      setInitialCard(null);
     }
   }, [user]);
 
@@ -145,12 +198,11 @@ const PlayerCard = ({
   const cardPickup = async () => {
     // insert card to collection
     try {
-      const card = !!user
-        ? await randomCardPickup(rendomCard)
-        : await getRandomCard();
+      const card = !!user ? await randomCardPickup(rendomCard) : rendomCard;
+      console.log("pickup", card);
 
-      cardFrontRef.current?.classList.add(styles["hidden"]);
       setCardData(card);
+      cardFrontRef.current?.classList.add(styles["hidden"]);
     } catch (error) {
       console.error(error);
     }
@@ -166,67 +218,55 @@ const PlayerCard = ({
 
   return (
     <div className={styles.card_container} style={dynamicStyles}>
-      <div
-        ref={cardTranslaterRef}
-        className={styles["card_translater"]}
-        onClick={handelClick}
-        onMouseMove={interact}
-        onTouchMove={interact}
-        onMouseLeave={() => {
-          if (doingPopOver.current === false) {
-            interactEnd();
-          }
-        }}
-        onTouchEnd={() => {
-          if (doingPopOver.current === false) {
-            interactEnd();
-          }
-        }}
-      >
-        <div className={`${styles.card_item} ${styles.card_back}`}>
-          <Image
-            className={styles.card_back}
-            src={"/images/card_back.png"}
-            alt={"카드 뒷면"}
-            fill
-            sizes="max-width: 272px max-height: 380px"
-          />
-        </div>
+      {initialCard !== undefined && (
         <div
-          ref={cardFrontRef}
-          className={`${styles.card_item} ${styles.card_front}`}
+          ref={cardTranslaterRef}
+          className={styles["card_translater"]}
+          onClick={handelClick}
+          onMouseMove={interact}
+          onTouchMove={interact}
+          onMouseLeave={() => {
+            if (doingPopOver.current === false) {
+              interactEnd();
+            }
+          }}
+          onTouchEnd={() => {
+            if (doingPopOver.current === false) {
+              interactEnd();
+            }
+          }}
         >
-          {cardData && (
-            <>
-              <div className={styles["card_glare"]}></div>
-              <Image
-                className={styles.card_front}
-                src={cardData?.imgURL}
-                alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
-                sizes="max-width: 272px max-height: 380px"
-                fill
-                onLoad={() => {
-                  setIsCardLoading(true);
-                  // 카드 로드시 발생하는 이벤트
-                  // 최초 뽑기 이벤트에서 카드 로드 완료시 카드를 보여줌
-                  if (!initialCard) {
-                    // console.time("pickup");
-                    cardTranslaterRef.current?.classList.add(
-                      styles["pickup_active"],
-                    );
-
-                    const time = setTimeout(() => {
-                      cardFrontRef.current?.classList.remove(styles["hidden"]);
-                    }, 1000);
-                  }
-                }}
-              />
-            </>
-          )}
+          <div className={`${styles.card_item} ${styles.card_back}`}>
+            <NextImage
+              className={styles.card_back}
+              src={"/images/card_back.png"}
+              alt={"카드 뒷면"}
+              fill
+              sizes="max-width: 272px max-height: 380px"
+            />
+          </div>
+          <div
+            ref={cardFrontRef}
+            className={`${styles.card_item} ${styles.card_front}`}
+          >
+            {cardData && (
+              <>
+                <div className={styles["card_glare"]}></div>
+                <NextImage
+                  className={styles.card_front}
+                  src={cardData?.imgURL}
+                  alt={`선수명: ${cardData.player.name} 카드명: ${cardData.name}`}
+                  sizes="max-width: 272px max-height: 380px"
+                  fill
+                  onLoad={() => {
+                    setIsCardLoading(true);
+                  }}
+                />
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
-};
-
-export default PlayerCard;
+}
