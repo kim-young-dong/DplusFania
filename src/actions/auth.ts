@@ -8,7 +8,7 @@ export async function signin(formData: { email: string; password: string }) {
   // type-casting here for convenience
   // in practice, you should validate your inputs
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithPassword(formData);
 
@@ -28,7 +28,7 @@ export async function signup(formData: { email: string; password: string }) {
   // type-casting here for convenience
   // in practice, you should validate your inputs
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signUp(formData);
 
@@ -46,7 +46,7 @@ export async function signout() {
   // type-casting here for convenience
   // in practice, you should validate your inputs
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
 
@@ -60,7 +60,7 @@ export async function signout() {
 }
 
 export async function getUser() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
 

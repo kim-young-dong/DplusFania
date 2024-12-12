@@ -3,7 +3,7 @@ import createClient from "@/utils/supabase/server";
 import { redirect } from "next/dist/server/api-utils";
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
 
